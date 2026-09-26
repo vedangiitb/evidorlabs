@@ -1,79 +1,76 @@
 import React from 'react';
 import Link from 'next/link';
 import { SITE_CONFIG } from '@/lib/constants';
-import { Terminal, ExternalLink, ShieldAlert } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { GithubIcon } from '@/components/GithubIcon';
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[#050609] relative overflow-hidden">
-      {/* Subtle background glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-sky-500/5 blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-          {/* Brand Col */}
-          <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-sky-400 to-indigo-600 flex items-center justify-center">
-                <Terminal className="w-3.5 h-3.5 text-white" />
+    <footer className="border-t border-white/[0.08] bg-black text-zinc-400 text-xs">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          {/* Brand */}
+          <div className="md:col-span-2 space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-[4px] bg-white flex items-center justify-center text-black font-mono font-bold text-xs">
+                E
               </div>
-              <span className="font-mono text-base font-bold tracking-wider text-white">
-                {SITE_CONFIG.name.toUpperCase()}
+              <span className="font-mono text-sm font-semibold tracking-tight text-white">
+                evidor
               </span>
             </div>
-            <p className="text-sm font-medium text-slate-300">
+            <p className="text-zinc-400 font-medium text-xs">
               {SITE_CONFIG.positioning}
             </p>
-            <p className="text-xs text-slate-400 max-w-md leading-relaxed">
-              Evidor provides a minimal, provider-agnostic harness between applications and foundation models with automated context management and compaction.
+            <p className="text-zinc-500 text-xs max-w-sm leading-relaxed">
+              Provider-agnostic foundation for reliable LLM applications and autonomous AI systems with built-in context window management.
             </p>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono bg-amber-500/10 border border-amber-500/20 text-amber-300">
-              <ShieldAlert className="w-3.5 h-3.5" />
-              <span>Currently under active development · {SITE_CONFIG.version}</span>
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono text-zinc-500 pt-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400/90" />
+              <span>Currently under development · v{SITE_CONFIG.version}</span>
             </div>
           </div>
 
-          {/* Core Links */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-semibold">
-              Documentation & Resources
-            </h4>
-            <ul className="space-y-2 text-sm text-slate-400">
+          {/* Documentation Links */}
+          <div className="space-y-2.5">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
+              Documentation
+            </div>
+            <ul className="space-y-2 text-zinc-500">
               <li>
-                <Link href="/docs" className="hover:text-sky-400 transition-colors">
-                  Documentation Guide
+                <Link href="/docs" className="hover:text-white transition-colors">
+                  Overview &amp; Guide
                 </Link>
               </li>
               <li>
-                <Link href="/#quickstart" className="hover:text-sky-400 transition-colors">
+                <Link href="/docs#installation" className="hover:text-white transition-colors">
+                  Installation
+                </Link>
+              </li>
+              <li>
+                <Link href="/docs#quickstart" className="hover:text-white transition-colors">
                   Quickstart
                 </Link>
               </li>
               <li>
-                <Link href="/#architecture" className="hover:text-sky-400 transition-colors">
-                  Architecture Overview
+                <Link href="/docs#context-management" className="hover:text-white transition-colors">
+                  Context Compaction
                 </Link>
               </li>
               <li>
-                <Link href="/#context" className="hover:text-sky-400 transition-colors">
-                  Context Compaction Engine
-                </Link>
-              </li>
-              <li>
-                <Link href="/#capabilities" className="hover:text-sky-400 transition-colors">
-                  Current Capabilities
+                <Link href="/docs#release-model" className="hover:text-white transition-colors">
+                  Release Lifecycle
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Repositories & Packages */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-semibold">
-              Repositories & Package
-            </h4>
-            <ul className="space-y-2 text-sm text-slate-400">
+          {/* External Repositories */}
+          <div className="space-y-2.5">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
+              Repositories
+            </div>
+            <ul className="space-y-2 text-zinc-500">
               <li>
                 <a
                   href={SITE_CONFIG.githubCoreUrl}
@@ -82,8 +79,8 @@ export function Footer() {
                   className="flex items-center gap-1.5 hover:text-white transition-colors"
                 >
                   <GithubIcon className="w-3.5 h-3.5" />
-                  <span>evidor-core (GitHub)</span>
-                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                  <span>evidor-core</span>
+                  <ArrowUpRight className="w-3 h-3 text-zinc-600" />
                 </a>
               </li>
               <li>
@@ -91,10 +88,10 @@ export function Footer() {
                   href={SITE_CONFIG.testPypiUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 hover:text-sky-400 transition-colors font-mono text-xs"
+                  className="flex items-center gap-1.5 hover:text-white transition-colors font-mono"
                 >
-                  <span>TestPyPI Package</span>
-                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                  <span>TestPyPI package</span>
+                  <ArrowUpRight className="w-3 h-3 text-zinc-600" />
                 </a>
               </li>
               <li>
@@ -105,8 +102,8 @@ export function Footer() {
                   className="flex items-center gap-1.5 hover:text-white transition-colors"
                 >
                   <GithubIcon className="w-3.5 h-3.5" />
-                  <span>evidorlabs (Landing Page)</span>
-                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                  <span>evidorlabs</span>
+                  <ArrowUpRight className="w-3 h-3 text-zinc-600" />
                 </a>
               </li>
               <li>
@@ -114,9 +111,9 @@ export function Footer() {
                   href={`${SITE_CONFIG.githubCoreUrl}/issues`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-slate-200 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
-                  Issue Tracker
+                  Issues &amp; Discussions
                 </a>
               </li>
             </ul>
@@ -124,14 +121,12 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <div className="flex items-center gap-2">
-            <span>© {new Date().getFullYear()} {SITE_CONFIG.author}. Open-source under MIT License.</span>
+        <div className="pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-zinc-600 text-[11px] font-mono">
+          <div>
+            © {new Date().getFullYear()} {SITE_CONFIG.author}. MIT License.
           </div>
-          <div className="flex items-center gap-4 font-mono text-slate-400">
-            <span>Version: {SITE_CONFIG.version}</span>
-            <span>•</span>
-            <span className="text-amber-400/90 font-medium">Early Development</span>
+          <div>
+            Package status: <span className="text-zinc-400">Pre-release (v{SITE_CONFIG.version})</span>
           </div>
         </div>
       </div>

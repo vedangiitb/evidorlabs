@@ -46,7 +46,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="min-h-screen bg-[#07080b] text-slate-200 antialiased flex flex-col justify-between selection:bg-sky-500/20 selection:text-white">
+      <body className="min-h-screen bg-black text-zinc-200 antialiased flex flex-col justify-between selection:bg-white selection:text-black">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

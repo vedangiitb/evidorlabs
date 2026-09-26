@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Check, Copy, Terminal, ExternalLink } from 'lucide-react';
+import { Check, Copy, Terminal } from 'lucide-react';
 import { CodeBlock } from '@/components/CodeBlock';
 import { CODE_EXAMPLES } from '@/lib/constants';
 
@@ -13,7 +13,6 @@ interface ProviderCardProps {
   exampleModel: string;
   envVar: string;
   description: string;
-  docsUrl: string;
 }
 
 const PROVIDERS: ProviderCardProps[] = [
@@ -25,7 +24,6 @@ const PROVIDERS: ProviderCardProps[] = [
     exampleModel: 'gpt-4.1-mini',
     envVar: 'OPENAI_API_KEY',
     description: 'First-class adapter for OpenAI models with streaming and conversational compaction.',
-    docsUrl: 'https://platform.openai.com',
   },
   {
     name: 'Anthropic',
@@ -35,7 +33,6 @@ const PROVIDERS: ProviderCardProps[] = [
     exampleModel: 'claude-3-5-sonnet-20241022',
     envVar: 'ANTHROPIC_API_KEY',
     description: 'Native adapter for Anthropic Claude series with context preservation.',
-    docsUrl: 'https://docs.anthropic.com',
   },
   {
     name: 'Gemini',
@@ -45,17 +42,15 @@ const PROVIDERS: ProviderCardProps[] = [
     exampleModel: 'gemini-2.5-flash',
     envVar: 'GEMINI_API_KEY',
     description: 'Powered by the official google-genai SDK for high-performance inference.',
-    docsUrl: 'https://ai.google.dev',
   },
   {
-    name: 'Custom Provider',
-    classNameTitle: 'ModelProvider Protocol',
-    badge: 'Zero dependencies',
+    name: 'Custom',
+    classNameTitle: 'ModelProvider',
+    badge: 'Protocol',
     installExtra: 'evidor',
-    exampleModel: 'Any LLM / Self-hosted',
-    envVar: 'User Defined',
-    description: 'Implement generate() and with_model() to harness any proprietary, local, or self-hosted model.',
-    docsUrl: '/docs#custom-providers',
+    exampleModel: 'Self-hosted / Any LLM',
+    envVar: 'Custom',
+    description: 'Implement generate() and with_model() to harness any proprietary or local endpoint.',
   },
 ];
 
@@ -69,42 +64,42 @@ export function ProvidersSection() {
   };
 
   return (
-    <div className="space-y-12">
-      {/* 4 Provider Grid Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div className="space-y-8">
+      {/* 4 Provider Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {PROVIDERS.map((provider) => {
           const cmd = `pip install "${provider.installExtra}"`;
           return (
             <div
               key={provider.name}
-              className="p-5 rounded-xl bg-[#0a0c13] border border-white/10 hover:border-white/25 transition-all flex flex-col justify-between group shadow-xl"
+              className="p-4 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between group"
             >
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-base font-bold text-white group-hover:text-sky-300 transition-colors">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-white">
                     {provider.name}
                   </h3>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">
+                  <span className="text-[10px] font-mono text-zinc-500 border border-zinc-800 bg-zinc-900/60 px-1.5 py-0.5 rounded">
                     {provider.badge}
                   </span>
                 </div>
 
-                <div className="text-xs font-mono text-sky-400/90 mb-2 font-medium">
+                <div className="text-xs font-mono text-zinc-400 mb-2">
                   {provider.classNameTitle}
                 </div>
 
-                <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                <p className="text-xs text-zinc-500 leading-relaxed mb-4">
                   {provider.description}
                 </p>
 
-                <div className="space-y-2 pt-3 border-t border-white/5 text-[11px] font-mono mb-4">
-                  <div className="flex justify-between items-center text-slate-400">
+                <div className="space-y-1.5 pt-3 border-t border-zinc-800/80 text-[11px] font-mono mb-4">
+                  <div className="flex justify-between items-center text-zinc-500">
                     <span>Model:</span>
-                    <span className="text-slate-300 font-semibold truncate max-w-[130px]">{provider.exampleModel}</span>
+                    <span className="text-zinc-300 font-medium truncate max-w-[130px]">{provider.exampleModel}</span>
                   </div>
-                  <div className="flex justify-between items-center text-slate-400">
+                  <div className="flex justify-between items-center text-zinc-500">
                     <span>Env:</span>
-                    <span className="text-amber-300/90">{provider.envVar}</span>
+                    <span className="text-zinc-300">{provider.envVar}</span>
                   </div>
                 </div>
               </div>
@@ -112,17 +107,17 @@ export function ProvidersSection() {
               {/* Install pill button */}
               <button
                 onClick={() => handleCopy(cmd, provider.name)}
-                className="w-full mt-2 flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-slate-300 hover:text-white transition-all"
+                className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors"
                 title={`Copy ${cmd}`}
               >
                 <div className="flex items-center gap-1.5 truncate">
-                  <Terminal className="w-3 h-3 text-sky-400 shrink-0" />
+                  <Terminal className="w-3 h-3 text-zinc-500 shrink-0" />
                   <span className="truncate">{cmd}</span>
                 </div>
                 {copiedExtra === provider.name ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 ml-1" />
+                  <Check className="w-3 h-3 text-emerald-400 shrink-0 ml-1" />
                 ) : (
-                  <Copy className="w-3 h-3 text-slate-400 shrink-0 ml-1" />
+                  <Copy className="w-3 h-3 text-zinc-500 shrink-0 ml-1" />
                 )}
               </button>
             </div>
@@ -131,43 +126,38 @@ export function ProvidersSection() {
       </div>
 
       {/* Install all extra banner */}
-      <div className="p-4 rounded-xl bg-gradient-to-r from-sky-950/20 via-indigo-950/20 to-purple-950/20 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-300 shrink-0 font-mono text-xs font-bold">
-            ALL
-          </div>
-          <div>
-            <div className="text-sm font-semibold text-white">Need support for all providers?</div>
-            <div className="text-xs text-slate-400">Install all optional dependencies in a single step</div>
-          </div>
+      <div className="p-4 rounded-xl bg-zinc-950 border border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="text-sm font-semibold text-white">Need support for all providers?</div>
+          <div className="text-xs text-zinc-500 mt-0.5">Install all optional dependencies in a single step</div>
         </div>
 
         <button
           onClick={() => handleCopy('pip install "evidor[all]"', 'all')}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 text-xs font-mono text-sky-200 transition-all active:scale-98"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white text-black hover:bg-zinc-200 text-xs font-mono font-medium transition-colors"
         >
           <span>pip install &quot;evidor[all]&quot;</span>
           {copiedExtra === 'all' ? (
-            <Check className="w-3.5 h-3.5 text-emerald-400" />
+            <Check className="w-3 h-3 text-emerald-600" />
           ) : (
-            <Copy className="w-3.5 h-3.5 text-sky-400" />
+            <Copy className="w-3 h-3 text-zinc-600" />
           )}
         </button>
       </div>
 
-      {/* Custom Provider Protocol Code */}
-      <div className="space-y-4">
+      {/* Custom Provider Code */}
+      <div className="space-y-3 pt-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <div className="text-xs font-mono uppercase tracking-wider text-amber-400 font-semibold">
-              Extendability
+            <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">
+              Extensibility
             </div>
-            <h3 className="text-lg font-bold text-white mt-1">
-              Implement the ModelProvider Protocol
+            <h3 className="text-base font-bold text-white tracking-tight mt-0.5">
+              Implement ModelProvider Protocol
             </h3>
           </div>
-          <p className="text-xs text-slate-400 max-w-md">
-            Any class that conforms to the <code className="text-sky-300">ModelProvider</code> protocol with <code className="text-sky-300">generate(request)</code> can be plugged directly into <code className="text-sky-300">Agent</code>.
+          <p className="text-xs text-zinc-500 max-w-md">
+            Any class that implements <code className="text-zinc-300 font-mono">generate(request)</code> can be passed into <code className="text-zinc-300 font-mono">Agent</code>.
           </p>
         </div>
 
@@ -180,4 +170,3 @@ export function ProvidersSection() {
     </div>
   );
 }
-
