@@ -3,12 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { SITE_CONFIG } from '@/lib/constants';
+import { useReleaseInfo } from '@/lib/useReleaseInfo';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { GithubIcon } from '@/components/GithubIcon';
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { version } = useReleaseInfo();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,7 +97,7 @@ export function Navbar() {
               title="View distribution on TestPyPI"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400/90" />
-              <span>v{SITE_CONFIG.version}</span>
+              <span>v{version.replace(/^v/, '')}</span>
             </a>
 
             {/* GitHub Link */}
@@ -119,7 +121,7 @@ export function Navbar() {
               rel="noopener noreferrer"
               className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400"
             >
-              v{SITE_CONFIG.version}
+              v{version.replace(/^v/, '')}
             </a>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -193,7 +195,7 @@ export function Navbar() {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 py-2 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-xs"
             >
-              <span>TestPyPI (v{SITE_CONFIG.version})</span>
+              <span>TestPyPI (v{version.replace(/^v/, '')})</span>
             </a>
           </div>
         </div>

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { SITE_CONFIG, CODE_EXAMPLES } from '@/lib/constants';
+import { useReleaseInfo } from '@/lib/useReleaseInfo';
 import { CodeBlock } from '@/components/CodeBlock';
 import { GithubIcon } from '@/components/GithubIcon';
 import {
@@ -68,6 +69,7 @@ const DOCS_SECTIONS = [
 
 export default function DocsPage() {
   const [activeSection, setActiveSection] = useState('overview');
+  const { version } = useReleaseInfo();
 
   return (
     <div className="pt-20 pb-20 min-h-screen bg-black text-white">
@@ -77,7 +79,7 @@ export default function DocsPage() {
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
             <span>
-              Pre-release documentation for <strong>evidor v{SITE_CONFIG.version}</strong>. Available on TestPyPI.
+              Pre-release documentation for <strong>evidor v{version.replace(/^v/, '')}</strong>. Available on TestPyPI.
             </span>
           </div>
           <a
@@ -545,7 +547,7 @@ pip install "evidor[dev]"`}
                     <span>dev Branch → TestPyPI</span>
                   </div>
                   <p className="text-zinc-500 leading-relaxed">
-                    Pushes and merged pull requests to <code className="text-zinc-300">dev</code> automatically build and publish prerelease versions with the token <code className="text-zinc-300 font-mono">-dev.N</code> (e.g. <code className="text-zinc-200 font-mono">v1.0.0-dev.2</code>) to TestPyPI.
+                    Pushes and merged pull requests to <code className="text-zinc-300">dev</code> automatically build and publish prerelease versions with the token <code className="text-zinc-300 font-mono">-dev.N</code> (e.g. <code className="text-zinc-200 font-mono">v{version.replace(/^v/, '')}</code>) to TestPyPI.
                   </p>
                 </div>
 
@@ -581,7 +583,7 @@ pip install "evidor[dev]"`}
               </div>
 
               <div className="p-3 rounded-md bg-zinc-950 border border-zinc-800 text-xs text-zinc-400">
-                <strong>Current Status:</strong> The current active distribution is <code className="text-white font-mono">v1.0.0-dev.2</code>, published on TestPyPI for development and exploratory testing.
+                <strong>Current Status:</strong> The current active distribution is <code className="text-white font-mono">v{version.replace(/^v/, '')}</code>, published on TestPyPI for development and exploratory testing.
               </div>
             </section>
 

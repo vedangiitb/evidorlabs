@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { SITE_CONFIG } from '@/lib/constants';
+import { useReleaseInfo } from '@/lib/useReleaseInfo';
 import { HeroVisual } from '@/components/HeroVisual';
 import { ArchitectureDiagram } from '@/components/ArchitectureDiagram';
 import { ContextTimeline } from '@/components/ContextTimeline';
 import { ProvidersSection } from '@/components/ProvidersSection';
 import { CodeSection } from '@/components/CodeSection';
 import { ToolsSection } from '@/components/ToolsSection';
+import { LiveReleaseSection } from '@/components/LiveReleaseSection';
 import { GithubIcon } from '@/components/GithubIcon';
 import {
   ArrowUpRight,
@@ -28,6 +30,7 @@ import {
 } from 'lucide-react';
 
 export default function HomePage() {
+  const { version } = useReleaseInfo();
   const [copiedHero, setCopiedHero] = useState(false);
 
   const handleCopyHero = async () => {
@@ -50,7 +53,7 @@ export default function HomePage() {
           <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
           <span className="font-medium tracking-wide">UNDER DEVELOPMENT</span>
           <span className="text-zinc-600">·</span>
-          <span className="text-zinc-400">v{SITE_CONFIG.version}</span>
+          <span className="text-zinc-400">v{version.replace(/^v/, '')}</span>
         </div>
 
         {/* Main Heading */}
@@ -459,51 +462,9 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 8. VERSION / RELEASE SECTION */}
+      {/* 8. LIVE VERSION / RELEASE SECTION */}
       {/* ========================================================================= */}
-      <section className="py-16 border-t border-white/[0.08] bg-black">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="p-6 sm:p-8 rounded-xl bg-zinc-950 border border-white/[0.08] flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="space-y-2 max-w-2xl">
-              <div className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <span>v{SITE_CONFIG.version} · Development release · Available on TestPyPI</span>
-              </div>
-              <h3 className="text-xl font-bold text-white tracking-tight">
-                Early, evolving, open to the future.
-              </h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                Changes merged to <code className="text-zinc-200 font-mono">dev</code> automatically publish prereleases to TestPyPI. Merges to <code className="text-zinc-200 font-mono">main</code> trigger stable releases to PyPI governed by Conventional Commits.
-              </p>
-              <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono text-zinc-500 pt-1">
-                <span>fix: → patch</span>
-                <span>•</span>
-                <span>feat: → minor</span>
-                <span>•</span>
-                <span>feat!: → major</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 shrink-0">
-              <a
-                href={SITE_CONFIG.testPypiUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md font-medium text-xs bg-white text-black hover:bg-zinc-200 transition-colors shadow-sm"
-              >
-                <span>View package →</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-zinc-600" />
-              </a>
-              <Link
-                href="/docs#release-model"
-                className="inline-flex items-center gap-1 px-3 py-2 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition-colors"
-              >
-                <span>Release Docs</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <LiveReleaseSection />
 
       {/* ========================================================================= */}
       {/* 9. ROADMAP / VISION SECTION */}
@@ -517,7 +478,7 @@ export default function HomePage() {
             Where Evidor is going
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-zinc-400 leading-relaxed">
-            Architectural milestones defining future releases. These capabilities are not implemented in <code className="text-zinc-300 font-mono">v1.0.0-dev.2</code> today.
+            Architectural milestones defining future releases. These capabilities are not implemented in <code className="text-zinc-300 font-mono">v{version.replace(/^v/, '')}</code> today.
           </p>
         </div>
 

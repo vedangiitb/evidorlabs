@@ -1,6 +1,6 @@
 export const SITE_CONFIG = {
   name: 'Evidor',
-  version: '1.0.0-dev.2',
+  version: '1.0.0-dev.3',
   status: 'Under Development',
   positioning: 'The most powerful LLM harness.',
   tagline: 'A provider-agnostic foundation for building reliable LLM applications and autonomous AI systems.',
