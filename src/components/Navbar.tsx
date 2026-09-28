@@ -53,6 +53,12 @@ export function Navbar() {
               Capabilities
             </Link>
             <Link
+              href="/#tools"
+              className="hover:text-white transition-colors"
+            >
+              Tools
+            </Link>
+            <Link
               href="/#architecture"
               className="hover:text-white transition-colors"
             >
@@ -135,6 +141,13 @@ export function Navbar() {
             className="block text-zinc-300 hover:text-white py-1.5"
           >
             Capabilities
+          </Link>
+          <Link
+            href="/#tools"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-zinc-300 hover:text-white py-1.5"
+          >
+            Tools &amp; Functions
           </Link>
           <Link
             href="/#architecture"

@@ -4,7 +4,7 @@ export const SITE_CONFIG = {
   status: 'Under Development',
   positioning: 'The most powerful LLM harness.',
   tagline: 'A provider-agnostic foundation for building reliable LLM applications and autonomous AI systems.',
-  subtagline: 'One interface. Multiple providers. Context management built in.',
+  subtagline: 'One interface. Multiple providers. Context management & tool execution built in.',
   githubCoreUrl: 'https://github.com/vedangiitb/evidor-core',
   githubLandingUrl: 'https://github.com/vedangiitb/evidorlabs',
   testPypiUrl: 'https://test.pypi.org/project/evidor/',
@@ -12,6 +12,7 @@ export const SITE_CONFIG = {
   author: 'Vedang Bale',
   defaultContextWindow: 16000,
   defaultMaxMessages: 50,
+  defaultMaxToolIterations: 10,
 };
 
 export const CODE_EXAMPLES = {
@@ -23,6 +24,62 @@ agent = Agent(OpenAIProvider(model="gpt-4.1-mini"))
 # Send a query
 response = agent.send("Give a one-sentence explanation of dependency inversion.")
 print(response.text)`,
+
+  toolsQuickstart: `from evidor import Agent, GeminiProvider, tool
+
+@tool
+def get_weather(location: str, unit: str = "celsius") -> str:
+    """Get the current weather forecast for a given location.
+
+    Args:
+        location: City and country or state, e.g. 'San Francisco, CA'.
+        unit: Temperature scale ('celsius' or 'fahrenheit').
+    """
+    return f"Weather in {location}: 22° {unit}, clear skies."
+
+# Agent automatically loops and invokes tools until completion
+agent = Agent(
+    GeminiProvider(model="gemini-2.5-flash"),
+    tools=[get_weather],
+    max_tool_iterations=10,
+)
+
+response = agent.send("What is the weather like in Tokyo right now?")
+print(response.text)`,
+
+  toolDefinition: `from evidor import tool
+
+# Automatic JSON schema derivation from types & docstrings
+@tool
+def get_weather(location: str, unit: str = "celsius") -> str:
+    """Get the current weather forecast for a given location.
+
+    Args:
+        location: City and country or state, e.g. 'San Francisco, CA'.
+        unit: Temperature scale ('celsius' or 'fahrenheit').
+    """
+    return f"Weather in {location}: 22° {unit}, clear skies."
+
+# Explicit name and description overrides
+@tool(name="calc_add", description="Add two numbers together.")
+def add(a: float, b: float) -> float:
+    return a + b`,
+
+  manualTool: `from evidor import Tool
+
+# Programmatic tool creation without Python function inspection
+custom_tool = Tool(
+    name="query_sql",
+    description="Run a read-only SQL query.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "query": {"type": "string", "description": "SQL statement"}
+        },
+        "required": ["query"],
+    },
+    func=lambda query: f"Results for: {query}",
+)`,
 
   multiTurn: `from evidor import Agent, AnthropicProvider
 
@@ -108,4 +165,3 @@ class CustomProvider:
         prompt_text = request.prompt
         return GenerationResponse(text="Custom response", model=self.model)`,
 };
-

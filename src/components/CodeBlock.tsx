@@ -68,10 +68,10 @@ export function CodeBlock({
       if (/^(True|False|None)$/.test(token)) {
         return <span key={i} className="text-amber-400 font-medium">{token}</span>;
       }
-      if (/\b(Agent|OpenAIProvider|AnthropicProvider|GeminiProvider|GenerationRequest|GenerationResponse|Message|ModelProvider|CustomProvider)\b/.test(token)) {
+      if (/\b(Agent|OpenAIProvider|AnthropicProvider|GeminiProvider|GenerationRequest|GenerationResponse|Message|ModelProvider|CustomProvider|Tool)\b/.test(token)) {
         return <span key={i} className="text-zinc-100 font-semibold">{token}</span>;
       }
-      if (/\b(send|generate|clear_history|with_model|print)\b/.test(token)) {
+      if (/\b(send|generate|clear_history|with_model|print|tool)\b/.test(token)) {
         return <span key={i} className="text-sky-300">{token}</span>;
       }
       return <span key={i} className="text-zinc-300">{token}</span>;

@@ -5,7 +5,7 @@ import { CodeBlock } from '@/components/CodeBlock';
 import { CODE_EXAMPLES } from '@/lib/constants';
 
 export function CodeSection() {
-  const [activeTab, setActiveTab] = useState<'quickstart' | 'multiturn' | 'system' | 'lowlevel'>('quickstart');
+  const [activeTab, setActiveTab] = useState<'quickstart' | 'tools' | 'multiturn' | 'system' | 'lowlevel'>('quickstart');
 
   const tabs = [
     {
@@ -14,6 +14,13 @@ export function CodeSection() {
       description: 'Initialize an Agent with OpenAI and dispatch a query in 5 lines.',
       code: CODE_EXAMPLES.quickstart,
       filename: 'quickstart.py',
+    },
+    {
+      id: 'tools',
+      label: 'Tools & Functions',
+      description: 'Equip agents with Python functions using @tool and autonomous execution loops.',
+      code: CODE_EXAMPLES.toolsQuickstart,
+      filename: 'agent_tools.py',
     },
     {
       id: 'multiturn',

@@ -30,6 +30,14 @@ const DOCS_SECTIONS = [
     ],
   },
   {
+    category: 'Tools & Functions',
+    items: [
+      { id: 'tool-definition', title: 'Defining Tools with @tool' },
+      { id: 'agent-tools', title: 'Equipping Agents with Tools' },
+      { id: 'manual-tools', title: 'Manual Tool Definition' },
+    ],
+  },
+  {
     category: 'Context Engine',
     items: [
       { id: 'context-management', title: 'Context Window & Limits' },
@@ -372,6 +380,67 @@ pip install "evidor[dev]"`}
 
               <div className="p-3 rounded-md bg-zinc-950 border border-zinc-800 text-xs text-zinc-400">
                 <code className="text-zinc-200 font-mono">agent.clear_history()</code> resets conversational dialogue turns and compacted summaries, but preserves the original <code className="text-zinc-200 font-mono">system_prompt</code> intact.
+              </div>
+            </section>
+
+            {/* TOOLS & FUNCTION CALLING */}
+            <section id="tool-definition" className="space-y-3 scroll-mt-24">
+              <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                TOOLS &amp; FUNCTION CALLING
+              </div>
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Defining Tools with @tool
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Transform any standard Python function into a provider-neutral tool using the <code className="text-zinc-200 font-mono">@tool</code> decorator. Evidor automatically derives JSON Schema for arguments from Python type hints and extracts parameter descriptions from docstrings (supporting Google, Sphinx, and plain conventions):
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.toolDefinition}
+                filename="tool_definition.py"
+                language="python"
+              />
+
+              <div className="p-3.5 rounded-lg bg-[#09090b] border border-white/[0.08] text-xs text-zinc-400 space-y-1">
+                <span className="font-semibold text-white">Schema Extraction:</span> Function arguments with default values are marked optional in the generated schema, while unassigned arguments are required. Custom tool names and descriptions can also be explicitly overridden using <code className="text-zinc-200 font-mono">@tool(name=&quot;...&quot;, description=&quot;...&quot;)</code>.
+              </div>
+            </section>
+
+            <section id="agent-tools" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Equipping Agents with Tools
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Pass tools directly into <code className="text-zinc-200 font-mono">Agent(..., tools=[...])</code>. When the model requests one or more tool calls, the agent automatically executes them, appends their outputs as <code className="text-zinc-200 font-mono">role=&quot;tool&quot;</code> messages, and loops until the model generates a final completed response:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.toolsQuickstart}
+                filename="agent_tool_loop.py"
+                language="python"
+              />
+
+              <div className="p-3.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-400 space-y-1">
+                <span className="font-semibold text-white">Loop Control:</span> Use <code className="text-zinc-200 font-mono">max_tool_iterations</code> (default: <code className="text-zinc-200 font-mono">10</code>) to prevent runaway execution in complex multi-step reasoning tasks.
+              </div>
+            </section>
+
+            <section id="manual-tools" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Manual &amp; Dynamic Tool Definition
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                For dynamic tools or programmatic schemas without a static Python function signature, instantiate <code className="text-zinc-200 font-mono">Tool</code> directly:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.manualTool}
+                filename="manual_tool.py"
+                language="python"
+              />
+
+              <div className="p-3.5 rounded-lg bg-[#09090b] border border-white/[0.08] text-xs text-zinc-400">
+                Evidor tool calling works transparently across <strong>OpenAI</strong>, <strong>Anthropic</strong>, and <strong>Gemini</strong>, normalizing schemas, arguments, and return types into a uniform execution flow.
               </div>
             </section>
 

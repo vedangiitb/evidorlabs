@@ -8,6 +8,7 @@ import { ArchitectureDiagram } from '@/components/ArchitectureDiagram';
 import { ContextTimeline } from '@/components/ContextTimeline';
 import { ProvidersSection } from '@/components/ProvidersSection';
 import { CodeSection } from '@/components/CodeSection';
+import { ToolsSection } from '@/components/ToolsSection';
 import { GithubIcon } from '@/components/GithubIcon';
 import {
   ArrowUpRight,
@@ -23,6 +24,7 @@ import {
   Eye,
   GitBranch,
   ShieldAlert,
+  Wrench,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -217,7 +219,7 @@ export default function HomePage() {
           </div>
 
           <div className="text-xs font-mono text-zinc-500 border border-zinc-800 bg-zinc-900/60 px-2.5 py-1 rounded">
-            14 verified features
+            18 verified features
           </div>
         </div>
 
@@ -230,18 +232,38 @@ export default function HomePage() {
               code: 'Agent(provider)',
             },
             {
+              title: '@tool Decorator',
+              desc: 'Transform standard Python functions into provider-neutral tools with docstring & type extraction.',
+              code: '@tool def search(...)',
+            },
+            {
+              title: 'Automatic Schema Derivation',
+              desc: 'Derives compliant JSON Schema for parameters automatically from type hints and docstring descriptions.',
+              code: 'get_weather(loc: str, unit: str)',
+            },
+            {
+              title: 'Autonomous Tool Loop',
+              desc: 'Executes tool calls requested by models, feeds results back as role="tool", and loops until completion.',
+              code: 'Agent(tools=[...], max_tool_iterations=10)',
+            },
+            {
+              title: 'Programmatic Tool Class',
+              desc: 'Instantiate Tool directly for dynamic schemas or lambdas without standard Python function signatures.',
+              code: 'Tool(name=..., parameters=...)',
+            },
+            {
               title: 'OpenAI Provider',
-              desc: 'Native adapter for GPT-4, GPT-4o, and gpt-4.1-mini using official openai Python client.',
+              desc: 'Native adapter for GPT-4, GPT-4o, and gpt-4.1-mini with automatic tool call conversion.',
               code: 'OpenAIProvider()',
             },
             {
               title: 'Anthropic Provider',
-              desc: 'Official adapter for Claude 3.5 Sonnet and Haiku via anthropic package.',
+              desc: 'Official adapter for Claude 3.5 Sonnet and Haiku with native tool format mapping.',
               code: 'AnthropicProvider()',
             },
             {
               title: 'Gemini Provider',
-              desc: 'High-speed Gemini adapter built on the official google-genai SDK.',
+              desc: 'High-speed Gemini adapter built on the official google-genai SDK with function declarations.',
               code: 'GeminiProvider()',
             },
             {
@@ -260,7 +282,7 @@ export default function HomePage() {
               code: 'system_prompt="..."',
             },
             {
-              title: 'Automatic Context-Window Management',
+              title: 'Automatic Context Management',
               desc: 'Dynamically tracks dialogue length against token limits to prevent model context window overflow.',
               code: 'context_window=16_000',
             },
@@ -314,6 +336,27 @@ export default function HomePage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 3.5 TOOLS & FUNCTION CALLING */}
+      {/* ========================================================================= */}
+      <section id="tools" className="py-20 border-t border-white/[0.08] bg-black">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
+          <div className="max-w-2xl">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold mb-2">
+              TOOL PRIMITIVES
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              Native tool primitives &amp; autonomous loops.
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm text-zinc-400 leading-relaxed">
+              Equip your agents with Python functions using <code className="text-zinc-200 font-mono">@tool</code>. Evidor automatically derives JSON Schema from type hints and docstrings, translates tool definitions across providers, and executes multi-turn tool loops until final response completion.
+            </p>
+          </div>
+
+          <ToolsSection />
         </div>
       </section>
 
@@ -495,8 +538,8 @@ export default function HomePage() {
             {
               icon: Sliders,
               tag: 'ROADMAP',
-              title: 'Tool & Function Orchestration',
-              desc: 'Native JSON schema validation, parallel tool dispatch, and sandboxed tool execution harnesses.',
+              title: 'Model Context Protocol (MCP)',
+              desc: 'Standardized client harness for remote MCP servers, sandboxed execution, and distributed agent toolkits.',
             },
             {
               icon: Eye,

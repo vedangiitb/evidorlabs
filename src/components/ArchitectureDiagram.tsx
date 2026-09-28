@@ -75,14 +75,18 @@ export function ArchitectureDiagram() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-[11px] font-mono pt-2 border-t border-zinc-800 text-zinc-400">
+            <div className="grid grid-cols-3 gap-2 text-[11px] font-mono pt-2 border-t border-zinc-800 text-zinc-400">
               <div>
-                <span className="text-zinc-500">Context Window:</span>{' '}
+                <span className="text-zinc-500">Context:</span>{' '}
                 <span className="text-zinc-200">16k tokens</span>
               </div>
               <div>
-                <span className="text-zinc-500">Max Messages:</span>{' '}
+                <span className="text-zinc-500">History:</span>{' '}
                 <span className="text-zinc-200">50 turns</span>
+              </div>
+              <div>
+                <span className="text-zinc-500">Tool Loop:</span>{' '}
+                <span className="text-white">Auto dispatch</span>
               </div>
             </div>
           </div>
