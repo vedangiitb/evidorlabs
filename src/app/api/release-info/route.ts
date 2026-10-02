@@ -10,7 +10,7 @@ import {
 export const revalidate = 120; // Revalidate at most every 2 minutes
 
 function normalizeVersion(versionStr: string): string {
-  // Turn "1.0.0.dev3" into "1.0.0-dev.3"
+  // Turn "1.0.0.dev3" into "1.0.0-dev.3" if prerelease, else keep clean semver
   const devMatch = versionStr.match(/^(\d+\.\d+\.\d+)\.dev(\d+)$/i);
   if (devMatch) {
     return `${devMatch[1]}-dev.${devMatch[2]}`;
@@ -25,9 +25,9 @@ export async function GET() {
   let recentCommits: GitCommitItem[] = FALLBACK_RELEASE_INFO.recentCommits;
   let isLive = false;
 
-  // 1. Fetch latest version from TestPyPI
+  // 1. Fetch latest version from PyPI
   try {
-    const pypiRes = await fetch('https://test.pypi.org/pypi/evidor/json', {
+    const pypiRes = await fetch('https://pypi.org/pypi/evidor/json', {
       next: { revalidate: 120 },
       headers: { Accept: 'application/json' },
     });
@@ -51,19 +51,19 @@ export async function GET() {
       }
     }
   } catch (err) {
-    console.warn('Failed to fetch version from TestPyPI:', err);
+    console.warn('Failed to fetch version from PyPI:', err);
   }
 
-  // 2. Fetch CHANGELOG.md from GitHub raw (dev branch, fallback to main)
+  // 2. Fetch CHANGELOG.md from GitHub raw (main branch, fallback to dev)
   try {
     let changelogRes = await fetch(
-      'https://raw.githubusercontent.com/vedangiitb/evidor-core/dev/CHANGELOG.md',
+      'https://raw.githubusercontent.com/vedangiitb/evidor-core/main/CHANGELOG.md',
       { next: { revalidate: 120 } }
     );
 
     if (!changelogRes.ok) {
       changelogRes = await fetch(
-        'https://raw.githubusercontent.com/vedangiitb/evidor-core/main/CHANGELOG.md',
+        'https://raw.githubusercontent.com/vedangiitb/evidor-core/dev/CHANGELOG.md',
         { next: { revalidate: 120 } }
       );
     }
@@ -114,7 +114,8 @@ export async function GET() {
   const responseData: DynamicReleaseInfo = {
     version,
     publishedDate,
-    testPypiUrl: 'https://test.pypi.org/project/evidor/',
+    pypiUrl: 'https://pypi.org/project/evidor/',
+    testPypiUrl: 'https://pypi.org/project/evidor/',
     changelog,
     recentCommits,
     source: isLive ? 'live' : 'fallback',

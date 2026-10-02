@@ -4,10 +4,11 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: 'Evidor — The most powerful LLM harness',
+  title: 'Evidor — Provider-Agnostic Runtime for Building AI Agents',
   description:
-    'Evidor is a provider-agnostic foundation for building reliable LLM applications and autonomous AI systems. One interface. Multiple providers. Context management built in.',
+    'Evidor is an open-source, provider-agnostic runtime for building AI agents across OpenAI, Anthropic, and Gemini with built-in context window management and autonomous tool execution.',
   keywords: [
+    'AI agent runtime',
     'LLM harness',
     'AI agent',
     'OpenAI',
@@ -16,22 +17,23 @@ export const metadata: Metadata = {
     'Python LLM library',
     'context window management',
     'automatic compaction',
+    'function calling',
     'evidor',
   ],
   authors: [{ name: 'Vedang Bale' }],
   openGraph: {
-    title: 'Evidor — The most powerful LLM harness',
+    title: 'Evidor — Provider-Agnostic Runtime for Building AI Agents',
     description:
-      'A provider-agnostic foundation for building reliable LLM applications and autonomous AI systems. One interface. Multiple providers. Context management built in.',
+      'Open-source, provider-agnostic runtime for building AI agents with built-in context compaction, native async, and autonomous tool calling.',
     type: 'website',
     locale: 'en_US',
     siteName: 'Evidor',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Evidor — The most powerful LLM harness',
+    title: 'Evidor — Provider-Agnostic Runtime for Building AI Agents',
     description:
-      'Provider-agnostic foundation for building reliable LLM applications and autonomous AI systems.',
+      'Open-source, provider-agnostic runtime for building AI agents with built-in context compaction and tool loops.',
   },
   robots: {
     index: true,
@@ -54,4 +56,3 @@ export default function RootLayout({
     </html>
   );
 }
-
