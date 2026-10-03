@@ -10,7 +10,8 @@ import { GithubIcon } from '@/components/GithubIcon';
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { version } = useReleaseInfo();
+  const { version, pypiUrl } = useReleaseInfo();
+  const effectivePypiUrl = pypiUrl || SITE_CONFIG.pypiUrl;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -90,13 +91,13 @@ export function Navbar() {
           <div className="hidden sm:flex items-center gap-3">
             {/* Version status pill */}
             <a
-              href={SITE_CONFIG.testPypiUrl}
+              href={effectivePypiUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700 transition-colors"
-              title="View distribution on TestPyPI"
+              className="flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors"
+              title="View published package on PyPI"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400/90" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               <span>v{version.replace(/^v/, '')}</span>
             </a>
 
@@ -109,17 +110,17 @@ export function Navbar() {
             >
               <GithubIcon className="w-3.5 h-3.5" />
               <span>GitHub</span>
-              <ArrowUpRight className="w-3 h-3 text-zinc-600" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-zinc-600" />
             </a>
           </div>
 
           {/* Mobile hamburger */}
           <div className="flex md:hidden items-center gap-2">
             <a
-              href={SITE_CONFIG.testPypiUrl}
+              href={effectivePypiUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400"
+              className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300"
             >
               v{version.replace(/^v/, '')}
             </a>
@@ -190,12 +191,12 @@ export function Navbar() {
               <span>GitHub Repository</span>
             </a>
             <a
-              href={SITE_CONFIG.testPypiUrl}
+              href={effectivePypiUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 py-2 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-xs"
             >
-              <span>TestPyPI (v{version.replace(/^v/, '')})</span>
+              <span>PyPI (v{version.replace(/^v/, '')})</span>
             </a>
           </div>
         </div>

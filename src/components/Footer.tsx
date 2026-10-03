@@ -19,15 +19,15 @@ export function Footer() {
                 evidor
               </span>
             </div>
-            <p className="text-zinc-400 font-medium text-xs">
+            <p className="text-zinc-300 font-medium text-xs">
               {SITE_CONFIG.positioning}
             </p>
             <p className="text-zinc-500 text-xs max-w-sm leading-relaxed">
-              Provider-agnostic foundation for reliable LLM applications and autonomous AI systems with built-in context window management.
+              Open-source runtime for building AI agents across model providers, with built-in context window management, native async, and autonomous tool loops.
             </p>
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono text-zinc-500 pt-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400/90" />
-              <span>Currently under development · v{SITE_CONFIG.version}</span>
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono text-zinc-400 pt-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span>Published on PyPI · v{SITE_CONFIG.version}</span>
             </div>
           </div>
 
@@ -39,7 +39,7 @@ export function Footer() {
             <ul className="space-y-2 text-zinc-500">
               <li>
                 <Link href="/docs" className="hover:text-white transition-colors">
-                  Overview &amp; Guide
+                  Overview &amp; Architecture
                 </Link>
               </li>
               <li>
@@ -53,13 +53,18 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/docs#tools" className="hover:text-white transition-colors">
+                  Tools &amp; Function Calling
+                </Link>
+              </li>
+              <li>
                 <Link href="/docs#context-management" className="hover:text-white transition-colors">
                   Context Compaction
                 </Link>
               </li>
               <li>
-                <Link href="/docs#release-model" className="hover:text-white transition-colors">
-                  Release Lifecycle
+                <Link href="/docs#async" className="hover:text-white transition-colors">
+                  Async Conversations
                 </Link>
               </li>
             </ul>
@@ -68,9 +73,20 @@ export function Footer() {
           {/* External Repositories */}
           <div className="space-y-2.5">
             <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
-              Repositories
+              Ecosystem
             </div>
             <ul className="space-y-2 text-zinc-500">
+              <li>
+                <a
+                  href={SITE_CONFIG.pypiUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 hover:text-white transition-colors font-mono text-zinc-300"
+                >
+                  <span>evidor on PyPI</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
+                </a>
+              </li>
               <li>
                 <a
                   href={SITE_CONFIG.githubCoreUrl}
@@ -79,19 +95,8 @@ export function Footer() {
                   className="flex items-center gap-1.5 hover:text-white transition-colors"
                 >
                   <GithubIcon className="w-3.5 h-3.5" />
-                  <span>evidor-core</span>
-                  <ArrowUpRight className="w-3 h-3 text-zinc-600" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href={SITE_CONFIG.testPypiUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 hover:text-white transition-colors font-mono"
-                >
-                  <span>TestPyPI package</span>
-                  <ArrowUpRight className="w-3 h-3 text-zinc-600" />
+                  <span>evidor-core (GitHub)</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-zinc-600" />
                 </a>
               </li>
               <li>
@@ -103,7 +108,7 @@ export function Footer() {
                 >
                   <GithubIcon className="w-3.5 h-3.5" />
                   <span>evidorlabs</span>
-                  <ArrowUpRight className="w-3 h-3 text-zinc-600" />
+                  <ArrowUpRight className="w-3.5 h-3.5 text-zinc-600" />
                 </a>
               </li>
               <li>
@@ -126,7 +131,7 @@ export function Footer() {
             © {new Date().getFullYear()} {SITE_CONFIG.author}. MIT License.
           </div>
           <div>
-            Package status: <span className="text-zinc-400">Pre-release (v{SITE_CONFIG.version})</span>
+            PyPI release: <span className="text-zinc-300">v{SITE_CONFIG.version} (Stable)</span>
           </div>
         </div>
       </div>

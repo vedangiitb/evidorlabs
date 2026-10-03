@@ -5,7 +5,9 @@ import { CodeBlock } from '@/components/CodeBlock';
 import { CODE_EXAMPLES } from '@/lib/constants';
 
 export function CodeSection() {
-  const [activeTab, setActiveTab] = useState<'quickstart' | 'tools' | 'multiturn' | 'system' | 'lowlevel'>('quickstart');
+  const [activeTab, setActiveTab] = useState<
+    'quickstart' | 'async' | 'tools' | 'filesystem' | 'websearch' | 'multiturn' | 'compaction'
+  >('quickstart');
 
   const tabs = [
     {
@@ -16,11 +18,32 @@ export function CodeSection() {
       filename: 'quickstart.py',
     },
     {
+      id: 'async',
+      label: 'Native Async',
+      description: 'Run native async conversations with send_async on event loops (FastAPI, Tornado).',
+      code: CODE_EXAMPLES.asyncAgent,
+      filename: 'async_agent.py',
+    },
+    {
       id: 'tools',
-      label: 'Tools & Functions',
+      label: 'Autonomous Tools',
       description: 'Equip agents with Python functions using @tool and autonomous execution loops.',
       code: CODE_EXAMPLES.toolsQuickstart,
       filename: 'agent_tools.py',
+    },
+    {
+      id: 'filesystem',
+      label: 'Filesystem Tools',
+      description: 'Safe, scoped filesystem operations bounded to a target root directory.',
+      code: CODE_EXAMPLES.filesystemTools,
+      filename: 'filesystem_agent.py',
+    },
+    {
+      id: 'websearch',
+      label: 'Web Search',
+      description: 'Provider-neutral search using Tavily, Exa, or Brave using Python standard library.',
+      code: CODE_EXAMPLES.webSearch,
+      filename: 'websearch_agent.py',
     },
     {
       id: 'multiturn',
@@ -30,18 +53,11 @@ export function CodeSection() {
       filename: 'multiturn_agent.py',
     },
     {
-      id: 'system',
-      label: 'System Prompts',
-      description: 'Permanent guidelines that survive conversation compaction resets.',
-      code: CODE_EXAMPLES.systemPrompt,
-      filename: 'system_prompt.py',
-    },
-    {
-      id: 'lowlevel',
-      label: 'Low-level Requests',
-      description: 'Direct provider calls without session state via GenerationRequest.',
-      code: CODE_EXAMPLES.lowLevel,
-      filename: 'direct_generation.py',
+      id: 'compaction',
+      label: 'Context Compaction',
+      description: 'Automatic message and token budget monitoring with model-based compaction.',
+      code: CODE_EXAMPLES.contextManagement,
+      filename: 'context_compaction.py',
     },
   ];
 

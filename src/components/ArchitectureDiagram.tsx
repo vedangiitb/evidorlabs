@@ -11,14 +11,14 @@ export function ArchitectureDiagram() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-8 border-b border-white/[0.06] gap-2 relative z-10">
         <div>
           <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-semibold mb-1">
-            <span>SPECIFICATION // v1.0.0-dev.2</span>
+            <span>SPECIFICATION // v1.2.0</span>
           </div>
           <h3 className="text-xl font-bold text-white tracking-tight">
-            System Topology &amp; Context Pipeline
+            System Topology &amp; Runtime Pipeline
           </h3>
         </div>
-        <div className="text-xs font-mono text-zinc-500">
-          Stateful Orchestration • Bounded History
+        <div className="text-xs font-mono text-zinc-400">
+          Stateful Orchestration • Bounded Context • Autonomous Tools
         </div>
       </div>
 
@@ -28,9 +28,9 @@ export function ArchitectureDiagram() {
         <div className="lg:col-span-7 space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">
-              1. Execution Pipeline
+              1. Execution &amp; Tool Pipeline
             </span>
-            <span className="text-[11px] font-mono text-zinc-500">Synchronous API</span>
+            <span className="text-[11px] font-mono text-zinc-500">Sync (send) &amp; Native Async (send_async)</span>
           </div>
 
           {/* Level 1: Application */}
@@ -41,11 +41,11 @@ export function ArchitectureDiagram() {
               </div>
               <div>
                 <div className="text-xs font-semibold text-white">Client Application</div>
-                <div className="text-[11px] text-zinc-500">FastAPI, background worker, or interactive CLI</div>
+                <div className="text-[11px] text-zinc-500">FastAPI, worker, pipeline, or CLI</div>
               </div>
             </div>
             <code className="text-[11px] font-mono text-zinc-300 bg-zinc-900 px-2 py-1 rounded border border-zinc-800">
-              agent.send()
+              send() / send_async()
             </code>
           </div>
 
@@ -65,11 +65,11 @@ export function ArchitectureDiagram() {
                   <div className="text-xs font-bold text-white flex items-center gap-2">
                     <span>Evidor Agent</span>
                     <span className="text-[10px] font-mono text-zinc-400 border border-zinc-700 bg-zinc-800 px-1 rounded">
-                      Core Harness
+                      Core Runtime
                     </span>
                   </div>
                   <div className="text-[11px] text-zinc-400">
-                    Session state coordinator &amp; turn compaction engine
+                    Session state coordinator, tool dispatcher &amp; turn compaction engine
                   </div>
                 </div>
               </div>
@@ -85,8 +85,8 @@ export function ArchitectureDiagram() {
                 <span className="text-zinc-200">50 turns</span>
               </div>
               <div>
-                <span className="text-zinc-500">Tool Loop:</span>{' '}
-                <span className="text-white">Auto dispatch</span>
+                <span className="text-zinc-500">Tools:</span>{' '}
+                <span className="text-emerald-400">Loop + Timeouts</span>
               </div>
             </div>
           </div>
@@ -142,9 +142,9 @@ export function ArchitectureDiagram() {
         <div className="lg:col-span-5 space-y-4 lg:border-l lg:border-white/[0.06] lg:pl-8">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">
-              2. Context Lifecycle
+              2. Context &amp; Tool Lifecycle
             </span>
-            <span className="text-[11px] font-mono text-zinc-500">Compaction</span>
+            <span className="text-[11px] font-mono text-zinc-500">Autonomous</span>
           </div>
 
           <div className="space-y-2.5 text-xs">
@@ -154,9 +154,9 @@ export function ArchitectureDiagram() {
                 01
               </span>
               <div>
-                <div className="font-semibold text-white">Conversation History</div>
+                <div className="font-semibold text-white">Conversation &amp; Tool Turns</div>
                 <div className="text-[11px] text-zinc-500 mt-0.5">
-                  Ordered dialogue sequences recorded in internal memory.
+                  Dialogue and tool responses recorded as typed <code className="text-zinc-300 font-mono">Message</code> items.
                 </div>
               </div>
             </div>
@@ -169,7 +169,7 @@ export function ArchitectureDiagram() {
               <div>
                 <div className="font-semibold text-white">Budget Evaluation</div>
                 <div className="text-[11px] text-zinc-500 mt-0.5">
-                  Triggered when exceeding <code className="text-zinc-300 font-mono">16,000 tokens</code> or <code className="text-zinc-300 font-mono">50 turns</code>.
+                  Monitors message count (&gt;50) and token threshold (&gt;16k) before triggering compaction.
                 </div>
               </div>
             </div>
@@ -182,7 +182,7 @@ export function ArchitectureDiagram() {
               <div>
                 <div className="font-semibold text-white">Background Summarization</div>
                 <div className="text-[11px] text-zinc-400 mt-0.5">
-                  Older turns are distilled using primary model or lightweight summarizer.
+                  Older turns distilled using primary provider or cheaper <code className="text-zinc-200 font-mono">summarization_model</code>.
                 </div>
               </div>
             </div>
@@ -195,7 +195,7 @@ export function ArchitectureDiagram() {
               <div>
                 <div className="font-semibold text-white">Bounded Summary Injection</div>
                 <div className="text-[11px] text-zinc-500 mt-0.5">
-                  Injected as <code className="text-zinc-300 font-mono">Message(is_summary=True)</code>.
+                  Summary stored as <code className="text-zinc-300 font-mono">Message(role=&quot;system&quot;, is_summary=True)</code>.
                 </div>
               </div>
             </div>
@@ -206,9 +206,9 @@ export function ArchitectureDiagram() {
                 05
               </span>
               <div>
-                <div className="font-semibold text-white">Next Turn Assembly</div>
+                <div className="font-semibold text-white">Request Assembly</div>
                 <div className="text-[11px] text-zinc-500 mt-0.5">
-                  System Prompt (intact) + Summary + Recent Turns fed to model.
+                  System Prompt (survives resets) + Summary + Recent Turns + Tools dispatched to LLM.
                 </div>
               </div>
             </div>
