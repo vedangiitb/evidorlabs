@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Check, Copy, Terminal } from 'lucide-react';
+import { Check, Copy, Terminal, Server, Activity, ShieldCheck } from 'lucide-react';
 import { CodeBlock } from '@/components/CodeBlock';
 import { CODE_EXAMPLES } from '@/lib/constants';
 
@@ -23,7 +23,7 @@ const PROVIDERS: ProviderCardProps[] = [
     installExtra: 'evidor[openai]',
     exampleModel: 'gpt-4.1-mini',
     envVar: 'OPENAI_API_KEY',
-    description: 'First-class adapter for OpenAI models with streaming and conversational compaction.',
+    description: 'First-class adapter for OpenAI models with tool calling, retries, and context compaction.',
   },
   {
     name: 'Anthropic',
@@ -32,7 +32,7 @@ const PROVIDERS: ProviderCardProps[] = [
     installExtra: 'evidor[anthropic]',
     exampleModel: 'claude-3-5-sonnet-20241022',
     envVar: 'ANTHROPIC_API_KEY',
-    description: 'Native adapter for Anthropic Claude series with context preservation.',
+    description: 'Native adapter for Anthropic Claude series with native tool formatting & error recovery.',
   },
   {
     name: 'Gemini',
@@ -41,7 +41,7 @@ const PROVIDERS: ProviderCardProps[] = [
     installExtra: 'evidor[gemini]',
     exampleModel: 'gemini-2.5-flash',
     envVar: 'GEMINI_API_KEY',
-    description: 'Powered by the official google-genai SDK for high-performance inference.',
+    description: 'Powered by the official google-genai SDK for fast inference and function calling.',
   },
   {
     name: 'Custom',
@@ -51,6 +51,45 @@ const PROVIDERS: ProviderCardProps[] = [
     exampleModel: 'Self-hosted / Any LLM',
     envVar: 'Custom',
     description: 'Implement generate() and with_model() to harness any proprietary or local endpoint.',
+  },
+];
+
+const ECOSYSTEM_EXTRAS = [
+  {
+    title: 'Model Context Protocol (MCP)',
+    extra: 'evidor[mcp]',
+    description: 'Connect agents to external MCP servers over stdio, modern Streamable HTTP, or SSE.',
+    icon: Server,
+  },
+  {
+    title: 'OpenTelemetry & OpenInference',
+    extra: 'evidor[otel]',
+    description: 'Distributed tracing spans compliant with OpenTelemetry GenAI and OpenInference standards.',
+    icon: Activity,
+  },
+  {
+    title: 'Langfuse Observability',
+    extra: 'evidor[langfuse]',
+    description: 'LLM trace trees, prompt engineering, generation tracking, and cost evaluation.',
+    icon: Activity,
+  },
+  {
+    title: 'Arize Phoenix',
+    extra: 'evidor[phoenix]',
+    description: 'Local and cloud agent inspection with OpenInference UI and token tracking.',
+    icon: Activity,
+  },
+  {
+    title: 'Prometheus Metrics',
+    extra: 'evidor[prometheus]',
+    description: 'Operational metrics (retries, tokens, latency, agent runs) exported for Prometheus & Grafana.',
+    icon: Activity,
+  },
+  {
+    title: 'All Adapters & Toolkits',
+    extra: 'evidor[all]',
+    description: 'Install all model adapters, MCP clients, and telemetry sinks in one command.',
+    icon: ShieldCheck,
   },
 ];
 
@@ -125,24 +164,58 @@ export function ProvidersSection() {
         })}
       </div>
 
-      {/* Install all extra banner */}
-      <div className="p-4 rounded-xl bg-zinc-950 border border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="text-sm font-semibold text-white">Need support for all providers?</div>
-          <div className="text-xs text-zinc-500 mt-0.5">Install all optional dependencies in a single step</div>
+      {/* Optional Extras & Ecosystem Grid */}
+      <div className="space-y-3 pt-2">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">
+              EXTENSIBLE ECOSYSTEM
+            </div>
+            <h3 className="text-base font-bold text-white tracking-tight mt-0.5">
+              Modular Extras for MCP &amp; Telemetry
+            </h3>
+          </div>
+          <span className="text-xs font-mono text-zinc-500 hidden sm:inline-block">
+            Install only what you need
+          </span>
         </div>
 
-        <button
-          onClick={() => handleCopy('pip install "evidor[all]"', 'all')}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white text-black hover:bg-zinc-200 text-xs font-mono font-medium transition-colors"
-        >
-          <span>pip install &quot;evidor[all]&quot;</span>
-          {copiedExtra === 'all' ? (
-            <Check className="w-3 h-3 text-emerald-600" />
-          ) : (
-            <Copy className="w-3 h-3 text-zinc-600" />
-          )}
-        </button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {ECOSYSTEM_EXTRAS.map((extra) => {
+            const cmd = `pip install "${extra.extra}"`;
+            const Icon = extra.icon;
+            return (
+              <div
+                key={extra.extra}
+                className="p-3.5 rounded-xl bg-zinc-950 border border-white/[0.08] hover:border-white/[0.14] transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-semibold text-white flex items-center gap-1.5">
+                      <Icon className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>{extra.title}</span>
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-zinc-500 leading-relaxed mb-3">
+                    {extra.description}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => handleCopy(cmd, extra.extra)}
+                  className="w-full flex items-center justify-between px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors"
+                >
+                  <span className="truncate">{cmd}</span>
+                  {copiedExtra === extra.extra ? (
+                    <Check className="w-3 h-3 text-emerald-400 shrink-0 ml-1" />
+                  ) : (
+                    <Copy className="w-3 h-3 text-zinc-500 shrink-0 ml-1" />
+                  )}
+                </button>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Custom Provider Code */}

@@ -35,15 +35,97 @@ export interface DynamicReleaseInfo {
   fetchedAt: string;
 }
 
-// Fallback data reflecting the published PyPI package
+// Fallback data reflecting the published PyPI package (v1.4.0)
 export const FALLBACK_RELEASE_INFO: DynamicReleaseInfo = {
-  version: '1.2.0',
-  publishedDate: '2026-10-04',
+  version: '1.4.0',
+  publishedDate: '2026-10-10',
   pypiUrl: 'https://pypi.org/project/evidor/',
   testPypiUrl: 'https://pypi.org/project/evidor/',
   fetchedAt: new Date().toISOString(),
   source: 'fallback',
   changelog: [
+    {
+      version: 'v1.4.0',
+      date: '2026-10-10',
+      sections: [
+        {
+          category: 'Features',
+          items: [
+            {
+              text: 'Configurable agent LLM retries with exponential backoff, jitter, and Retry-After support',
+              commitHash: '2ed8f12',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/2ed8f12ee8ff8e9c44f58501a898b05c656e7325',
+            },
+            {
+              text: 'Decoupled telemetry & observability actor runtime (<1µs latency on agent thread)',
+              commitHash: '124deb0',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/124deb0531985b1a2a781c395db5db177bd38e33',
+            },
+            {
+              text: 'Observability adapters for OpenTelemetry, Langfuse, Arize Phoenix, and Prometheus',
+              commitHash: '188fa50',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/188fa50ec176e96e30708f51149e87adf9a79e25',
+            },
+            {
+              text: 'Privacy and PII protection mode with sink-level capture_content=False',
+              commitHash: '6ae868f',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/6ae868f37c7c3916760bcdd55173b6ebbe800f61',
+            },
+            {
+              text: 'Python 3.14 official support',
+              commitHash: '83cfe8e',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/83cfe8e158a564bd950266b7f265f5d0ba0f55fe',
+            },
+          ],
+        },
+        {
+          category: 'Bug Fixes',
+          items: [
+            {
+              text: 'Harden LLM retry policies, async backoff, and telemetry coordination',
+              commitHash: 'c93a8ef',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/c93a8efd766446a2fce8e90a9a13be1c791ccb26',
+            },
+            {
+              text: 'Guarantee telemetry queue draining on shutdown and in-flight flush synchronization',
+              commitHash: '6d20487',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/6d204878a24ac8f52652b4dd077c071d6154f9a8',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      version: 'v1.3.0',
+      date: '2026-10-08',
+      sections: [
+        {
+          category: 'Features',
+          items: [
+            {
+              text: 'First-class Model Context Protocol (MCP) integration (stdio, Streamable HTTP, SSE)',
+              commitHash: '44ad88d',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/44ad88d1b03e0923fc0f7a47fd1ec9d1ec3ff7c0',
+            },
+            {
+              text: 'Agent mcp_servers and shared mcp_client support for multi-agent applications',
+              commitHash: '843ab00',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/843ab00f54f5d95c235f86abbde328bd6523b542',
+            },
+          ],
+        },
+        {
+          category: 'Bug Fixes',
+          items: [
+            {
+              text: 'Parallel connectivity to MCP for synchronous process execution',
+              commitHash: '83a4173',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/83a417343721f6e1a9da73cdb5dd3290b91a7392',
+            },
+          ],
+        },
+      ],
+    },
     {
       version: 'v1.2.0',
       date: '2026-10-04',
@@ -84,16 +166,6 @@ export const FALLBACK_RELEASE_INFO: DynamicReleaseInfo = {
             },
           ],
         },
-        {
-          category: 'Documentation',
-          items: [
-            {
-              text: 'Documentation updates for web search and filesystem tools',
-              commitHash: 'f07d47f',
-              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/f07d47f7f988d2e0751fd4981ef94160d09f48da',
-            },
-          ],
-        },
       ],
     },
     {
@@ -117,53 +189,55 @@ export const FALLBACK_RELEASE_INFO: DynamicReleaseInfo = {
         },
       ],
     },
-    {
-      version: 'v0.1.0',
-      date: '2026-09-25',
-      sections: [
-        {
-          category: 'Initial Release',
-          items: [
-            {
-              text: 'Initial release of provider-agnostic agent harness with context compaction',
-            },
-          ],
-        },
-      ],
-    },
   ],
   recentCommits: [
     {
-      hash: 'c04fc45',
-      shortHash: 'c04fc45',
-      message: '1.2.0',
-      date: '2026-10-04',
+      hash: 'cb6572a',
+      shortHash: 'cb6572a',
+      message: '1.4.0',
+      date: '2026-10-10',
       author: 'vedangiitb',
-      url: 'https://github.com/vedangiitb/evidor-core/commit/c04fc45',
+      url: 'https://github.com/vedangiitb/evidor-core/commit/cb6572a',
     },
     {
-      hash: 'f07d47f7f988d2e0751fd4981ef94160d09f48da',
-      shortHash: 'f07d47f',
-      message: 'docs(tools): doc updates for web search tool',
-      date: '2026-10-04',
+      hash: 'c93a8efd766446a2fce8e90a9a13be1c791ccb26',
+      shortHash: 'c93a8ef',
+      message: 'fix(retry): harden llm retry policies, async backoff, and telemetry coordination',
+      date: '2026-10-10',
       author: 'vedangiitb',
-      url: 'https://github.com/vedangiitb/evidor-core/commit/f07d47f7f988d2e0751fd4981ef94160d09f48da',
+      url: 'https://github.com/vedangiitb/evidor-core/commit/c93a8efd766446a2fce8e90a9a13be1c791ccb26',
     },
     {
-      hash: 'e5f051b6b53ba14237f9aab4254715c36a68dcf8',
-      shortHash: 'e5f051b',
-      message: 'feat(tools): web search tool',
-      date: '2026-10-04',
+      hash: '2ed8f12ee8ff8e9c44f58501a898b05c656e7325',
+      shortHash: '2ed8f12',
+      message: 'feat(agent): added configurable agent retries',
+      date: '2026-10-10',
       author: 'vedangiitb',
-      url: 'https://github.com/vedangiitb/evidor-core/commit/e5f051b6b53ba14237f9aab4254715c36a68dcf8',
+      url: 'https://github.com/vedangiitb/evidor-core/commit/2ed8f12ee8ff8e9c44f58501a898b05c656e7325',
     },
     {
-      hash: 'ccc0ef94e14c0f1dd1f89db14aefd21d1a658a5d',
-      shortHash: 'ccc0ef9',
-      message: 'feat: adding fs tools',
-      date: '2026-10-04',
+      hash: '6ae868f37c7c3916760bcdd55173b6ebbe800f61',
+      shortHash: '6ae868f',
+      message: 'feat(telemetry): add sink-level capture_content option for PII protection',
+      date: '2026-10-09',
       author: 'vedangiitb',
-      url: 'https://github.com/vedangiitb/evidor-core/commit/ccc0ef94e14c0f1dd1f89db14aefd21d1a658a5d',
+      url: 'https://github.com/vedangiitb/evidor-core/commit/6ae868f37c7c3916760bcdd55173b6ebbe800f61',
+    },
+    {
+      hash: '188fa50ec176e96e30708f51149e87adf9a79e25',
+      shortHash: '188fa50',
+      message: 'feat(telemetry): add Langfuse, Arize Phoenix, and Prometheus adapters',
+      date: '2026-10-09',
+      author: 'vedangiitb',
+      url: 'https://github.com/vedangiitb/evidor-core/commit/188fa50ec176e96e30708f51149e87adf9a79e25',
+    },
+    {
+      hash: '44ad88d1b03e0923fc0f7a47fd1ec9d1ec3ff7c0',
+      shortHash: '44ad88d',
+      message: 'feat(mcp): mcp integration',
+      date: '2026-10-06',
+      author: 'vedangiitb',
+      url: 'https://github.com/vedangiitb/evidor-core/commit/44ad88d1b03e0923fc0f7a47fd1ec9d1ec3ff7c0',
     },
   ],
 };
@@ -177,7 +251,7 @@ export function parseChangelogMarkdown(markdown: string): ReleaseVersion[] {
     const lines = block.split('\n');
     const headerLine = lines[0].trim();
 
-    // Match "v1.2.0 (2026-10-04)" or "1.2.0 (2026-10-04)"
+    // Match "v1.4.0 (2026-10-10)" or "1.4.0 (2026-10-10)"
     const headerMatch = headerLine.match(/^(v?[\w.-]+)(?:\s*\(([\d-]+)\))?/);
     const ver = headerMatch ? headerMatch[1] : headerLine;
     const date = headerMatch && headerMatch[2] ? headerMatch[2] : '';

@@ -1,10 +1,10 @@
 export const SITE_CONFIG = {
   name: 'Evidor',
-  version: '1.2.0',
+  version: '1.4.0',
   status: 'Published on PyPI',
   positioning: 'Provider-agnostic runtime for building AI agents.',
   tagline: 'An open-source, provider-agnostic runtime for building AI agents.',
-  subtagline: 'One interface. Multiple providers. Context compaction, native async, and tool loops built in.',
+  subtagline: 'One interface. Multiple providers. Context compaction, MCP servers, retries, and telemetry built in.',
   githubCoreUrl: 'https://github.com/vedangiitb/evidor-core',
   githubLandingUrl: 'https://github.com/vedangiitb/evidorlabs',
   pypiUrl: 'https://pypi.org/project/evidor/',
@@ -13,6 +13,7 @@ export const SITE_CONFIG = {
   defaultContextWindow: 16000,
   defaultMaxMessages: 50,
   defaultMaxToolIterations: 10,
+  defaultMaxRetries: 3,
 };
 
 export const CODE_EXAMPLES = {
@@ -88,6 +89,119 @@ async def main() -> None:
     print(response.text)
 
 asyncio.run(main())`,
+
+  mcpQuickstart: `from evidor import Agent, OpenAIProvider
+
+# Connect to any Model Context Protocol (MCP) server
+agent = Agent(
+    OpenAIProvider(model="gpt-4.1-mini"),
+    mcp_servers={
+        "amazon": {
+            "command": "uvx",
+            "args": ["amazon-mcp-server"],
+            "env": {"AWS_PROFILE": "default"},
+        }
+    },
+)
+
+# Tools exposed by the MCP server are automatically discovered and executed
+response = agent.send("Search for Kindle Paperwhite on Amazon and summarize reviews.")
+print(response.text)
+agent.close()`,
+
+  mcpRemote: `from evidor import Agent, GeminiProvider, MCPServerConfig
+
+# Connect multiple MCP servers (local stdio, Streamable HTTP, and legacy SSE)
+agent = Agent(
+    GeminiProvider(model="gemini-2.5-flash"),
+    mcp_servers=[
+        # Stdio subprocess
+        MCPServerConfig.stdio(name="amazon", command="uvx", args=["amazon-mcp-server"]),
+        # Remote Streamable HTTP server
+        MCPServerConfig.http(
+            name="inventory",
+            url="https://inventory.internal/mcp",
+            headers={"Authorization": "Bearer secret-token"},
+        ),
+        # Legacy SSE server
+        MCPServerConfig.sse(name="weather", url="http://localhost:8080/sse"),
+    ],
+)
+
+response = agent.send("Check warehouse stock and recommend hiking boots.")
+print(response.text)
+agent.close()`,
+
+  sharedMcp: `from evidor import Agent, MCPClient, OpenAIProvider
+
+# Boot a single shared MCP client across multiple agents (e.g. FastAPI)
+shared_mcp = MCPClient.from_file("claude_desktop_config.json")
+shared_mcp.connect()
+
+# Both agents reuse the exact same client without duplicating subprocesses:
+researcher = Agent(OpenAIProvider("gpt-4.1-mini"), mcp_client=shared_mcp)
+assistant = Agent(OpenAIProvider("gpt-4.1-mini"), mcp_client=shared_mcp)
+
+res1 = researcher.send("Search records for client ABC.")
+res2 = assistant.send("Verify credentials for client ABC.")
+shared_mcp.close()`,
+
+  retries: `from evidor import Agent, OpenAIProvider, RetryConfig
+
+# Default: 3 retries, initial delay 0.5s, exponential backoff with full jitter
+agent = Agent(
+    OpenAIProvider(model="gpt-4.1-mini"),
+    retry_config=RetryConfig(
+        max_retries=3,              # Max retry attempts (default: 3)
+        initial_delay=0.5,          # Initial backoff delay (seconds)
+        max_delay=60.0,             # Maximum backoff cap
+        backoff_factor=2.0,         # Exponential factor
+        jitter=True,                # Full jitter prevents thundering herds
+    ),
+)
+
+# Under-the-hood: Evidor auto-detects transient 429/5xx and network drops,
+# respects provider Retry-After headers, and coordinates a single retry budget.`,
+
+  telemetryOtel: `from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from evidor import Agent, OpenAIProvider, OpenTelemetrySink
+
+provider = TracerProvider()
+provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+trace.set_tracer_provider(provider)
+
+# Non-blocking telemetry (<1µs latency on agent thread) via dedicated worker
+otel_sink = OpenTelemetrySink(tracer_provider=provider)
+agent = Agent(OpenAIProvider("gpt-4.1-mini"), telemetry=otel_sink)
+
+response = agent.send("Search the documentation for vector embeddings.")
+agent.close()`,
+
+  telemetryLangfuse: `from evidor import Agent, OpenAIProvider, LangfuseSink
+
+# Traces agent execution, latency, and tokens to Langfuse
+langfuse_sink = LangfuseSink()  # Reads credentials from environment
+agent = Agent(OpenAIProvider("gpt-4.1-mini"), telemetry=langfuse_sink)
+
+response = agent.send("Summarize the quarterly earnings report.")
+agent.close()  # Flushes queues and terminates background worker`,
+
+  telemetryPrivacy: `from evidor import Agent, OpenAIProvider
+from evidor.telemetry import OpenTelemetrySink, LangfuseSink
+
+# Metadata-only mode: preserves trace trees, latency, and tokens,
+# but omits/redacts all raw prompt text, LLM outputs, and tool arguments.
+otel_sink = OpenTelemetrySink(capture_content=False)
+langfuse_sink = LangfuseSink(capture_content=False)
+
+agent = Agent(
+    OpenAIProvider("gpt-4.1-mini"),
+    telemetry=[otel_sink, langfuse_sink],
+)
+response = agent.send("Sensitive patient record or financial data...")
+agent.close()`,
 
   builtInTools: `from evidor import Agent, OpenAIProvider, calculator, get_current_time
 

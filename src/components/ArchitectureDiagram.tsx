@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowDown, Layers, ArrowRight } from 'lucide-react';
+import { ArrowDown, Layers, ArrowRight, Server, Activity, ShieldAlert, Cpu } from 'lucide-react';
 
 export function ArchitectureDiagram() {
   return (
@@ -11,14 +11,14 @@ export function ArchitectureDiagram() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-8 border-b border-white/[0.06] gap-2 relative z-10">
         <div>
           <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-semibold mb-1">
-            <span>SPECIFICATION // v1.2.0</span>
+            <span>SPECIFICATION // v1.4.0</span>
           </div>
           <h3 className="text-xl font-bold text-white tracking-tight">
             System Topology &amp; Runtime Pipeline
           </h3>
         </div>
         <div className="text-xs font-mono text-zinc-400">
-          Stateful Orchestration • Bounded Context • Autonomous Tools
+          Stateful Orchestration • MCP Bridge • Telemetry Actor • Unified Retries
         </div>
       </div>
 
@@ -69,24 +69,28 @@ export function ArchitectureDiagram() {
                     </span>
                   </div>
                   <div className="text-[11px] text-zinc-400">
-                    Session state coordinator, tool dispatcher &amp; turn compaction engine
+                    Session coordinator, MCP bridge, retry engine &amp; turn compaction
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 text-[11px] font-mono pt-2 border-t border-zinc-800 text-zinc-400">
+            <div className="grid grid-cols-4 gap-2 text-[10px] font-mono pt-2 border-t border-zinc-800 text-zinc-400">
               <div>
                 <span className="text-zinc-500">Context:</span>{' '}
                 <span className="text-zinc-200">16k tokens</span>
               </div>
               <div>
-                <span className="text-zinc-500">History:</span>{' '}
-                <span className="text-zinc-200">50 turns</span>
+                <span className="text-zinc-500">MCP:</span>{' '}
+                <span className="text-zinc-200">stdio/HTTP</span>
               </div>
               <div>
-                <span className="text-zinc-500">Tools:</span>{' '}
-                <span className="text-emerald-400">Loop + Timeouts</span>
+                <span className="text-zinc-500">Retries:</span>{' '}
+                <span className="text-emerald-400">Exp Backoff</span>
+              </div>
+              <div>
+                <span className="text-zinc-500">Telemetry:</span>{' '}
+                <span className="text-white">&lt;1µs Actor</span>
               </div>
             </div>
           </div>
@@ -104,7 +108,7 @@ export function ArchitectureDiagram() {
               </div>
               <div>
                 <div className="text-xs font-semibold text-white">ModelProvider Protocol</div>
-                <div className="text-[11px] text-zinc-500">Interface: generate(request) &amp; with_model(model)</div>
+                <div className="text-[11px] text-zinc-500">Unified interface: generate(request) &amp; with_model(model)</div>
               </div>
             </div>
             <code className="text-[11px] font-mono text-zinc-400">
@@ -138,77 +142,77 @@ export function ArchitectureDiagram() {
           </div>
         </div>
 
-        {/* Right Column: Context Subsystem (5 cols) */}
+        {/* Right Column: Resilience & Observability Subsystem (5 cols) */}
         <div className="lg:col-span-5 space-y-4 lg:border-l lg:border-white/[0.06] lg:pl-8">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">
-              2. Context &amp; Tool Lifecycle
+              2. Subsystems &amp; Bridges
             </span>
-            <span className="text-[11px] font-mono text-zinc-500">Autonomous</span>
+            <span className="text-[11px] font-mono text-zinc-500">Resilience</span>
           </div>
 
           <div className="space-y-2.5 text-xs">
-            {/* Step 1 */}
+            {/* Subsystem 1: MCP Bridge */}
             <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06] flex items-start gap-3">
               <span className="w-5 h-5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-[10px] text-zinc-400 shrink-0 mt-0.5">
-                01
+                <Server className="w-3 h-3" />
               </span>
               <div>
-                <div className="font-semibold text-white">Conversation &amp; Tool Turns</div>
+                <div className="font-semibold text-white">Model Context Protocol (MCP)</div>
                 <div className="text-[11px] text-zinc-500 mt-0.5">
-                  Dialogue and tool responses recorded as typed <code className="text-zinc-300 font-mono">Message</code> items.
+                  Subprocess &amp; HTTP bridges discover tools, execute calls, and avoid naming collisions.
                 </div>
               </div>
             </div>
 
-            {/* Step 2 */}
+            {/* Subsystem 2: Retry Engine */}
             <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06] flex items-start gap-3">
               <span className="w-5 h-5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-[10px] text-zinc-400 shrink-0 mt-0.5">
-                02
+                <ShieldAlert className="w-3 h-3 text-emerald-400" />
               </span>
               <div>
-                <div className="font-semibold text-white">Budget Evaluation</div>
+                <div className="font-semibold text-white">Coordinated Retry Engine</div>
                 <div className="text-[11px] text-zinc-500 mt-0.5">
-                  Monitors message count (&gt;50) and token threshold (&gt;16k) before triggering compaction.
+                  Transient 429/5xx detection, exponential backoff, jitter, and Retry-After header parsing.
                 </div>
               </div>
             </div>
 
-            {/* Step 3 */}
+            {/* Subsystem 3: Telemetry Actor */}
             <div className="p-3 rounded-lg bg-zinc-900/60 border border-white/[0.12] flex items-start gap-3">
               <span className="w-5 h-5 rounded bg-white text-black flex items-center justify-center font-mono text-[10px] font-bold shrink-0 mt-0.5">
-                03
+                <Activity className="w-3 h-3" />
               </span>
               <div>
-                <div className="font-semibold text-white">Background Summarization</div>
+                <div className="font-semibold text-white">Telemetry Actor Runtime</div>
                 <div className="text-[11px] text-zinc-400 mt-0.5">
-                  Older turns distilled using primary provider or cheaper <code className="text-zinc-200 font-mono">summarization_model</code>.
+                  Non-blocking bounded queue emits trace trees to OpenTelemetry, Langfuse, Phoenix, or Prometheus.
                 </div>
               </div>
             </div>
 
-            {/* Step 4 */}
+            {/* Subsystem 4: Context Compactor */}
             <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06] flex items-start gap-3">
               <span className="w-5 h-5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-[10px] text-zinc-400 shrink-0 mt-0.5">
                 04
               </span>
               <div>
-                <div className="font-semibold text-white">Bounded Summary Injection</div>
+                <div className="font-semibold text-white">Context Compaction Engine</div>
                 <div className="text-[11px] text-zinc-500 mt-0.5">
-                  Summary stored as <code className="text-zinc-300 font-mono">Message(role=&quot;system&quot;, is_summary=True)</code>.
+                  Token budget evaluation automatically synthesizes older turns into bounded summaries.
                 </div>
               </div>
             </div>
 
-            {/* Step 5 */}
+            {/* Subsystem 5: PII Protection */}
             <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06] flex items-start gap-3">
               <span className="w-5 h-5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-[10px] text-zinc-400 shrink-0 mt-0.5">
                 05
               </span>
               <div>
-                <div className="font-semibold text-white">Request Assembly</div>
+                <div className="font-semibold text-white">Privacy &amp; PII Protection</div>
                 <div className="text-[11px] text-zinc-500 mt-0.5">
-                  System Prompt (survives resets) + Summary + Recent Turns + Tools dispatched to LLM.
+                  Sink-level <code className="text-zinc-300 font-mono">capture_content=False</code> redacts raw prompts and outputs.
                 </div>
               </div>
             </div>

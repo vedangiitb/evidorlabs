@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { CodeBlock } from '@/components/CodeBlock';
 import { CODE_EXAMPLES } from '@/lib/constants';
-import { Wrench, RefreshCw, FolderTree, Globe, Clock, ShieldCheck } from 'lucide-react';
+import { Wrench, RefreshCw, FolderTree, Server } from 'lucide-react';
 
 export function ToolsSection() {
   const [activeTab, setActiveTab] = useState<
-    'agent' | 'decorator' | 'async' | 'filesystem' | 'websearch' | 'manual'
+    'agent' | 'mcp' | 'decorator' | 'async' | 'filesystem' | 'websearch' | 'manual'
   >('agent');
 
   return (
@@ -26,11 +26,11 @@ export function ToolsSection() {
 
         <div className="p-4 rounded-xl bg-[#09090b] border border-white/[0.08] space-y-2">
           <div className="flex items-center gap-2 text-white font-semibold">
-            <RefreshCw className="w-3.5 h-3.5 text-zinc-400" />
-            <span>Autonomous Execution Loop</span>
+            <Server className="w-3.5 h-3.5 text-zinc-400" />
+            <span>Model Context Protocol (MCP)</span>
           </div>
           <p className="text-zinc-500 leading-relaxed">
-            When models request tool calls, <code className="text-zinc-300 font-mono">Agent</code> executes them, appends tool result messages, and loops automatically up to <code className="text-zinc-300 font-mono">max_tool_iterations</code>.
+            Connect to external MCP servers over <code className="text-zinc-300 font-mono">stdio</code>, modern <code className="text-zinc-300 font-mono">Streamable HTTP</code>, or <code className="text-zinc-300 font-mono">SSE</code>. Tools are discovered and executed with collision prevention.
           </p>
         </div>
 
@@ -53,7 +53,7 @@ export function ToolsSection() {
               TOOL DISPATCH LIFECYCLE
             </div>
             <div className="text-sm font-semibold text-white">
-              Autonomous Function-Calling &amp; Built-in Toolkits
+              Autonomous Function-Calling &amp; MCP Integration
             </div>
           </div>
 
@@ -68,6 +68,16 @@ export function ToolsSection() {
               }`}
             >
               Agent Loop
+            </button>
+            <button
+              onClick={() => setActiveTab('mcp')}
+              className={`px-2.5 py-1 rounded transition-colors ${
+                activeTab === 'mcp'
+                  ? 'bg-zinc-800 text-white font-medium shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              MCP Servers
             </button>
             <button
               onClick={() => setActiveTab('decorator')}
@@ -132,7 +142,7 @@ export function ToolsSection() {
           <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06]">
             <div className="text-zinc-500 text-[10px]">02 / DISPATCH</div>
             <div className="text-zinc-200 font-medium mt-1">Model emits call</div>
-            <div className="text-[11px] text-zinc-500 mt-1">Provider normalizes call arguments across OpenAI, Claude, or Gemini</div>
+            <div className="text-[11px] text-zinc-500 mt-1">Routes call to local function, async worker, or external MCP server</div>
           </div>
           <div className="p-3 rounded-lg bg-zinc-900/60 border border-white/[0.12]">
             <div className="text-zinc-400 text-[10px]">03 / EXECUTE &amp; CATCH</div>
@@ -152,6 +162,13 @@ export function ToolsSection() {
             <CodeBlock
               code={CODE_EXAMPLES.toolsQuickstart}
               filename="agent_tool_loop.py"
+              language="python"
+            />
+          )}
+          {activeTab === 'mcp' && (
+            <CodeBlock
+              code={CODE_EXAMPLES.mcpQuickstart}
+              filename="mcp_agent.py"
               language="python"
             />
           )}

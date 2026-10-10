@@ -11,6 +11,7 @@ import { ProvidersSection } from '@/components/ProvidersSection';
 import { CodeSection } from '@/components/CodeSection';
 import { ToolsSection } from '@/components/ToolsSection';
 import { LiveReleaseSection } from '@/components/LiveReleaseSection';
+import { CapabilitiesSection } from '@/components/CapabilitiesSection';
 import { GithubIcon } from '@/components/GithubIcon';
 import {
   ArrowUpRight,
@@ -28,6 +29,9 @@ import {
   ShieldCheck,
   Wrench,
   Zap,
+  Server,
+  Activity,
+  RotateCw,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -144,62 +148,80 @@ export default function HomePage() {
               A runtime harness, not another wrapper.
             </h2>
             <p className="mt-3 text-sm text-zinc-400 leading-relaxed">
-              Evidor provides the operational runtime layer between your application and underlying LLM providers. Rather than masking provider APIs with bloated abstractions, it provides deterministic context compaction, native asynchronous execution, and multi-turn tool loops.
+              Evidor provides the operational runtime layer between your application and underlying LLM providers. Rather than masking provider APIs with bloated abstractions, it provides deterministic context compaction, MCP server connectivity, unified retries, and non-blocking telemetry.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Concept 1 */}
-            <div className="p-6 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between">
+            <div className="p-5 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between">
               <div>
-                <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 mb-5">
+                <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 mb-4">
                   <Layers className="w-4 h-4" />
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">
+                <h3 className="text-sm font-semibold text-white mb-1.5">
                   Provider Agnostic
                 </h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Use a consistent interface across model providers. Swap between OpenAI, Anthropic, Gemini, or custom models without rewriting prompt glue, message structures, or state machines.
+                  Consistent interface across OpenAI, Anthropic, Gemini, or custom models without rewriting prompt glue, message structures, or state machines.
                 </p>
               </div>
-              <div className="mt-6 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
-                OpenAI • Anthropic • Gemini • Custom
+              <div className="mt-5 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
+                OpenAI • Claude • Gemini
               </div>
             </div>
 
             {/* Concept 2 */}
-            <div className="p-6 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between">
+            <div className="p-5 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between">
               <div>
-                <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 mb-5">
+                <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 mb-4">
                   <Database className="w-4 h-4" />
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">
-                  Bounded Context Compaction
+                <h3 className="text-sm font-semibold text-white mb-1.5">
+                  Context Compaction
                 </h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Evidor automatically manages conversation history within configurable token and message limits, compacting older context using model-generated summaries while keeping system prompts and recent turns intact.
+                  Tracks token budgets and message limits, compacting older context with model-generated summaries while keeping system prompts and recent turns intact.
                 </p>
               </div>
-              <div className="mt-6 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
-                16k token window • 50 turns
+              <div className="mt-5 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
+                16k tokens • 50 turns
               </div>
             </div>
 
             {/* Concept 3 */}
-            <div className="p-6 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between">
+            <div className="p-5 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between">
               <div>
-                <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 mb-5">
-                  <Workflow className="w-4 h-4" />
+                <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 mb-4">
+                  <Server className="w-4 h-4" />
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">
-                  First-Class Tool Primitives
+                <h3 className="text-sm font-semibold text-white mb-1.5">
+                  Tools &amp; MCP Protocol
                 </h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Equip agents with Python functions using @tool. Includes automatic schema derivation, execution timeouts, self-healing error recovery, filesystem sandbox tools, and zero-dependency web search.
+                  Equip agents with local functions via @tool, sandbox filesystem tools, standard-library web search, or remote MCP servers over stdio, HTTP, or SSE.
                 </p>
               </div>
-              <div className="mt-6 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
-                @tool • Filesystem • Web Search • Async
+              <div className="mt-5 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
+                @tool • MCP stdio &amp; HTTP
+              </div>
+            </div>
+
+            {/* Concept 4 */}
+            <div className="p-5 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between">
+              <div>
+                <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 mb-4">
+                  <Activity className="w-4 h-4" />
+                </div>
+                <h3 className="text-sm font-semibold text-white mb-1.5">
+                  Retries &amp; Telemetry
+                </h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Exponential backoff with full jitter, Retry-After parsing, and an actor runtime emitting trace spans to OpenTelemetry, Langfuse, Phoenix, or Prometheus.
+                </p>
+              </div>
+              <div className="mt-5 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
+                OTel • Langfuse • Prometheus
               </div>
             </div>
           </div>
@@ -224,124 +246,12 @@ export default function HomePage() {
           </div>
 
           <div className="text-xs font-mono text-emerald-400 border border-emerald-950 bg-emerald-950/20 px-2.5 py-1 rounded">
-            Published PyPI Package
+            Published PyPI Package v{version.replace(/^v/, '')}
           </div>
         </div>
 
-        {/* Bento grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-          {[
-            {
-              title: 'Unified Agent Interface',
-              desc: 'Single high-level Agent class managing conversational state, model calls, tools, and turn compaction.',
-              code: 'Agent(provider, tools=[...])',
-            },
-            {
-              title: 'Multi-turn Conversations',
-              desc: 'Session history persists across consecutive agent.send() calls with structured message sequences.',
-              code: 'response = agent.send("...")',
-            },
-            {
-              title: 'Native Async Conversations',
-              desc: 'Execute natively on caller event loops (FastAPI, Tornado) preserving connection pools, locks, and contextvars.',
-              code: 'await agent.send_async(...)',
-            },
-            {
-              title: '@tool Decorator',
-              desc: 'Transform standard Python functions into provider-neutral tools with automatic schema and docstring extraction.',
-              code: '@tool(timeout=5.0) def search(...)',
-            },
-            {
-              title: 'Autonomous Tool Loop',
-              desc: 'Executes tool calls requested by models, feeds results back as role="tool", and loops until completion.',
-              code: 'max_tool_iterations=10',
-            },
-            {
-              title: 'Async Tools & Timeouts',
-              desc: 'Asynchronous tools run non-blocking with configurable per-tool and agent-level execution timeouts.',
-              code: 'tool_timeout=10.0',
-            },
-            {
-              title: 'Self-Healing Error Recovery',
-              desc: 'Tool exceptions, timeouts, and malformed JSON arguments are safely captured and fed back so LLMs self-correct.',
-              code: 'role="tool" error feedback',
-            },
-            {
-              title: 'Built-in Utility Tools',
-              desc: 'Dependency-free tools including calculator (safe arithmetic) and get_current_time (IANA timezone support).',
-              code: 'tools=[calculator, get_current_time]',
-            },
-            {
-              title: 'Scoped Filesystem Tools',
-              desc: 'Sandbox file suite for list, read, search, create, write, and delete operations bounded to a directory root.',
-              code: 'filesystem_tools("./project")',
-            },
-            {
-              title: 'Provider-Neutral Web Search',
-              desc: 'Bundled Tavily, Exa, and Brave adapters using only Python standard library; zero extra dependencies required.',
-              code: 'web_search(TavilySearchProvider())',
-            },
-            {
-              title: 'System Prompt Preservation',
-              desc: 'Permanent developer instructions anchored at index 0 across compaction and history reset cycles.',
-              code: 'system_prompt="..."',
-            },
-            {
-              title: 'Context Window Compaction',
-              desc: 'Dynamically tracks dialogue length against token limits and automatically summarizes older turns.',
-              code: 'context_window=16_000',
-            },
-            {
-              title: 'Configurable Message Retention',
-              desc: 'Enforce maximum message retention thresholds before triggering background LLM summarization.',
-              code: 'max_messages=50',
-            },
-            {
-              title: 'Decoupled Summarizer Model',
-              desc: 'Assign a lighter model string or an entirely different ModelProvider to execute compaction cheaply.',
-              code: 'summarization_model="gpt-4.1-mini"',
-            },
-            {
-              title: 'OpenAI Adapter',
-              desc: 'Native adapter for GPT-4, GPT-4o, and gpt-4.1-mini with automatic tool call conversion.',
-              code: 'OpenAIProvider(model="gpt-4.1-mini")',
-            },
-            {
-              title: 'Anthropic Adapter',
-              desc: 'Official adapter for Claude 3.5 Sonnet and Haiku with native tool format mapping.',
-              code: 'AnthropicProvider(model="claude-3-5...")',
-            },
-            {
-              title: 'Gemini Adapter',
-              desc: 'High-speed Gemini adapter built on the official google-genai SDK with function declarations.',
-              code: 'GeminiProvider(model="gemini-2.5-flash")',
-            },
-            {
-              title: 'Custom Provider Protocol',
-              desc: 'Plug any self-hosted model or custom endpoint into Agent by fulfilling the ModelProvider protocol.',
-              code: 'ModelProvider (generate & with_model)',
-            },
-          ].map((item, idx) => (
-            <div
-              key={idx}
-              className="p-4 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between"
-            >
-              <div>
-                <h4 className="text-xs font-semibold text-white mb-1.5">
-                  {item.title}
-                </h4>
-                <p className="text-[11px] text-zinc-500 leading-relaxed mb-3">
-                  {item.desc}
-                </p>
-              </div>
-              <div className="pt-2 border-t border-zinc-800/80">
-                <code className="text-[10px] font-mono text-zinc-400 block truncate">
-                  {item.code}
-                </code>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* Interactive Bento Grid & Simulators */}
+        <CapabilitiesSection version={version} />
       </section>
 
       {/* ========================================================================= */}
@@ -351,13 +261,13 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
           <div className="max-w-2xl">
             <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold mb-2">
-              TOOL PRIMITIVES &amp; TOOLKITS
+              TOOLS &amp; MCP PROTOCOL
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-              Native tool execution &amp; autonomous loops.
+              Native tool execution &amp; MCP servers.
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-zinc-400 leading-relaxed">
-              Equip your agents with Python functions using <code className="text-zinc-200 font-mono">@tool</code>. Evidor automatically derives JSON Schema from type hints and docstrings, handles timeouts and errors safely, and executes multi-turn tool loops until final response synthesis.
+              Equip your agents with Python functions using <code className="text-zinc-200 font-mono">@tool</code> or connect directly to external Model Context Protocol (MCP) servers. Evidor automatically handles schema derivation, timeouts, error recovery, and autonomous execution loops.
             </p>
           </div>
 
@@ -378,7 +288,7 @@ export default function HomePage() {
               Modular harness topology
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-zinc-400 leading-relaxed">
-              Clean separation between client application, conversational state, bounded context compaction, and provider tool loops.
+              Clean separation between client application, conversational state, bounded context compaction, MCP subprocesses, and non-blocking telemetry.
             </p>
           </div>
 
@@ -398,7 +308,7 @@ export default function HomePage() {
             Simple on the surface. Powerful underneath.
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-zinc-400 leading-relaxed">
-            Start with a single Agent. Add tools, switch providers, or run async workflows without rewriting your application.
+            Start with a single Agent. Add MCP servers, configure retries, or hook up OpenTelemetry without rewriting your application.
           </p>
         </div>
 
@@ -445,18 +355,18 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 7. PROVIDERS SECTION */}
+      {/* 7. PROVIDERS & ECOSYSTEM SECTION */}
       {/* ========================================================================= */}
       <section id="providers" className="py-20 max-w-6xl mx-auto px-4 sm:px-6">
         <div className="max-w-xl mb-8">
           <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold mb-2">
-            ADAPTERS
+            ADAPTERS &amp; ECOSYSTEM
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            One interface. Your model.
+            One interface. Your stack.
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-zinc-400 leading-relaxed">
-            Install only what you need with isolated package extras.
+            Install only what you need with isolated package extras for models, MCP, and observability.
           </p>
         </div>
 
@@ -487,12 +397,6 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
             {
-              icon: Cpu,
-              tag: 'ROADMAP',
-              title: 'Expanded Provider Matrix',
-              desc: 'Built-in adapters for local inference engines (Ollama, vLLM) and additional hosted APIs (Groq, Mistral, Bedrock).',
-            },
-            {
               icon: Zap,
               tag: 'ROADMAP',
               title: 'Streaming & Token Dispatch',
@@ -501,14 +405,20 @@ export default function HomePage() {
             {
               icon: Workflow,
               tag: 'ROADMAP',
-              title: 'Multi-Agent Orchestration',
-              desc: 'Lightweight coordination primitives for handoffs, supervisor agents, and specialized worker delegations.',
+              title: 'Multi-Agent Topologies',
+              desc: 'Coordination patterns for agent handoffs, supervisor orchestrations, and specialized worker delegations.',
             },
             {
               icon: Sliders,
               tag: 'ROADMAP',
               title: 'Structured Output Validation',
               desc: 'Native JSON schema and Pydantic model validation guarantees for deterministic agent response extraction.',
+            },
+            {
+              icon: Cpu,
+              tag: 'ROADMAP',
+              title: 'Local Inference Adapters',
+              desc: 'Dedicated high-performance adapters for local vLLM, Ollama, and specialized quantized engine endpoints.',
             },
             {
               icon: ShieldCheck,
