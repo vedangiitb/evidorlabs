@@ -157,17 +157,17 @@ export default function HomePage() {
             <div className="p-5 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between">
               <div>
                 <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 mb-4">
-                  <Layers className="w-4 h-4" />
+                  <Workflow className="w-4 h-4" />
                 </div>
                 <h3 className="text-sm font-semibold text-white mb-1.5">
-                  Provider Agnostic
+                  Two Execution Paradigms
                 </h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Consistent interface across OpenAI, Anthropic, Gemini, or custom models without rewriting prompt glue, message structures, or state machines.
+                  Stateful conversations (<code className="text-zinc-200 font-mono">Agent</code>) manage turn continuation and tool loops automatically. Stateless calls (<code className="text-zinc-200 font-mono">provider.generate</code>) give full control with zero hidden state.
                 </p>
               </div>
               <div className="mt-5 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
-                OpenAI • Claude • Gemini
+                Agent.send() • provider.generate()
               </div>
             </div>
 
@@ -178,14 +178,14 @@ export default function HomePage() {
                   <Database className="w-4 h-4" />
                 </div>
                 <h3 className="text-sm font-semibold text-white mb-1.5">
-                  Context Compaction
+                  Native Provider Compaction
                 </h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Tracks token budgets and message limits, compacting older context with model-generated summaries while keeping system prompts and recent turns intact.
+                  Context management is offloaded directly to model providers at <code className="text-zinc-200 font-mono">compact_threshold</code> using server-side chaining on OpenAI and Gemini, and prompt caching on Claude.
                 </p>
               </div>
               <div className="mt-5 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
-                16k tokens • 50 turns
+                compact_threshold • Server-Side Chaining
               </div>
             </div>
 
@@ -193,17 +193,17 @@ export default function HomePage() {
             <div className="p-5 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between">
               <div>
                 <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 mb-4">
-                  <Server className="w-4 h-4" />
+                  <Cpu className="w-4 h-4" />
                 </div>
                 <h3 className="text-sm font-semibold text-white mb-1.5">
-                  Tools &amp; MCP Protocol
+                  Thinking &amp; Reasoning Flags
                 </h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Equip agents with local functions via @tool, sandbox filesystem tools, standard-library web search, or remote MCP servers over stdio, HTTP, or SSE.
+                  First-class reasoning configurations for GPT-6, Claude, and Gemini with internal scratchpad access via <code className="text-zinc-200 font-mono">response.thinking</code> and cryptographic signature replaying.
                 </p>
               </div>
               <div className="mt-5 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
-                @tool • MCP stdio &amp; HTTP
+                thinking_level • effort • budget
               </div>
             </div>
 
@@ -211,17 +211,17 @@ export default function HomePage() {
             <div className="p-5 rounded-xl bg-[#09090b] border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col justify-between">
               <div>
                 <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 mb-4">
-                  <Activity className="w-4 h-4" />
+                  <Zap className="w-4 h-4" />
                 </div>
                 <h3 className="text-sm font-semibold text-white mb-1.5">
-                  Retries &amp; Telemetry
+                  Async &amp; Concurrent Tools
                 </h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Exponential backoff with full jitter, Retry-After parsing, and an actor runtime emitting trace spans to OpenTelemetry, Langfuse, Phoenix, or Prometheus.
+                  Async-first engine executing multi-tool turns concurrently via <code className="text-zinc-200 font-mono">asyncio.gather()</code>, loop guards, MCP servers, and a non-blocking &lt;1µs telemetry actor.
                 </p>
               </div>
               <div className="mt-5 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
-                OTel • Langfuse • Prometheus
+                asyncio.gather • MCP • OTel
               </div>
             </div>
           </div>
@@ -325,27 +325,27 @@ export default function HomePage() {
               CONTEXT ENGINE
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-              Never let context become your bottleneck.
+              Native provider compaction. Zero token bloat.
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-zinc-400 leading-relaxed">
-              Evidor tracks conversation history against configurable token and message limits. When the conversation becomes too large:
+              Evidor maps stateful conversations to each model provider&apos;s optimal native context mechanism instead of managing synthetic local summaries:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-zinc-400 pt-3">
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                <span>Older messages are summarized</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>OpenAI Responses API previous_response_id</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                <span>Summary retained as bounded context</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                <span>Gemini Interactions previous_interaction_id</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                <span>System prompt remains intact</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                <span>Claude Ephemeral Prompt Caching (90% savings)</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                <span>Recent turns remain available</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>Automated compact_threshold triggers</span>
               </div>
             </div>
           </div>

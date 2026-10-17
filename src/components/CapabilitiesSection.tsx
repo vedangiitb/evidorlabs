@@ -23,14 +23,23 @@ import {
   Cpu,
   Clock,
   Filter,
+  BrainCircuit,
+  FileText,
+  Boxes,
 } from 'lucide-react';
 
-type FilterCategory = 'all' | 'mcp_tools' | 'resilience' | 'telemetry' | 'runtime';
+type FilterCategory = 'all' | 'paradigms' | 'compaction' | 'thinking' | 'async_mcp' | 'telemetry';
 
 export function CapabilitiesSection({ version }: { version: string }) {
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  // Micro-simulator states
+  const [paradigmMode, setParadigmMode] = useState<'stateful' | 'stateless'>('stateful');
+  const [compactionProvider, setCompactionProvider] = useState<'openai' | 'gemini' | 'anthropic'>('openai');
+  const [thinkingModel, setThinkingModel] = useState<'openai' | 'anthropic' | 'gemini'>('openai');
   const [mcpTransport, setMcpTransport] = useState<'stdio' | 'http' | 'sse'>('stdio');
+  const [captureThinking, setCaptureThinking] = useState(true);
   const [piiRedacted, setPiiRedacted] = useState(false);
   const [telemetryTab, setTelemetryTab] = useState<'otel' | 'langfuse' | 'prometheus'>('otel');
 
@@ -49,10 +58,11 @@ export function CapabilitiesSection({ version }: { version: string }) {
         <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-[#09090b] border border-white/[0.08]">
           {[
             { id: 'all', label: 'All Capabilities' },
-            { id: 'mcp_tools', label: 'MCP & Toolkits' },
-            { id: 'resilience', label: 'Retries & Resilience' },
+            { id: 'paradigms', label: 'Stateful vs Stateless' },
+            { id: 'compaction', label: 'Native Compaction' },
+            { id: 'thinking', label: 'Thinking & Reasoning' },
+            { id: 'async_mcp', label: 'Async Engine & MCP' },
             { id: 'telemetry', label: 'Telemetry & PII' },
-            { id: 'runtime', label: 'Runtime & Compaction' },
           ].map((tab) => {
             const isActive = activeFilter === tab.id;
             return (
@@ -80,9 +90,332 @@ export function CapabilitiesSection({ version }: { version: string }) {
       {/* Dynamic Bento Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* ========================================================================= */}
-        {/* BENTO CARD 1: MODEL CONTEXT PROTOCOL (MCP) - Span 2 */}
+        {/* BENTO CARD 1: TWO EXECUTION PARADIGMS - Span 2 */}
         {/* ========================================================================= */}
-        {(activeFilter === 'all' || activeFilter === 'mcp_tools') && (
+        {(activeFilter === 'all' || activeFilter === 'paradigms') && (
+          <div className="md:col-span-2 p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-emerald-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-950/60 border border-emerald-800/60 flex items-center justify-center text-emerald-400">
+                    <Workflow className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
+                      <span>Two Execution Paradigms</span>
+                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">
+                        Core Architecture
+                      </span>
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 p-0.5 rounded-md bg-zinc-950 border border-zinc-800 text-[11px] font-mono">
+                  <button
+                    onClick={() => setParadigmMode('stateful')}
+                    className={`px-2.5 py-1 rounded transition-colors ${
+                      paradigmMode === 'stateful'
+                        ? 'bg-zinc-800 text-white font-medium'
+                        : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                  >
+                    Stateful (Agent)
+                  </button>
+                  <button
+                    onClick={() => setParadigmMode('stateless')}
+                    className={`px-2.5 py-1 rounded transition-colors ${
+                      paradigmMode === 'stateless'
+                        ? 'bg-zinc-800 text-white font-medium'
+                        : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                  >
+                    Stateless (generate)
+                  </button>
+                </div>
+              </div>
+
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-xl mb-4">
+                {paradigmMode === 'stateful'
+                  ? 'Recommended for conversational agents. Maintains conversation memory across turns without re-passing the entire message history each time. Evidor handles server-side chaining and autonomous tool loops.'
+                  : 'Direct single-turn requests with tools, structured outputs, and raw message lists. Ideal when your application has its own database/persistence layer and you require low-level control.'}
+              </p>
+
+              {/* Interactive Paradigm Preview */}
+              <div className="rounded-xl bg-black border border-white/[0.06] p-3.5 space-y-2.5 font-mono text-xs">
+                {paradigmMode === 'stateful' ? (
+                  <>
+                    <div className="flex items-center justify-between text-[11px] text-zinc-500 border-b border-zinc-900 pb-2">
+                      <span className="text-emerald-400">Agent(provider) // Session Memory</span>
+                      <span className="text-zinc-400 text-[10px]">Turn 2 Delta Only</span>
+                    </div>
+                    <div className="space-y-1.5 text-[11px]">
+                      <div className="text-zinc-400">
+                        <span className="text-zinc-600">Turn 1: </span>
+                        agent.send(&quot;My favorite color is navy blue.&quot;)
+                      </div>
+                      <div className="text-emerald-300">
+                        <span className="text-zinc-600">Turn 2: </span>
+                        agent.send(&quot;What color did I say I like?&quot;)
+                      </div>
+                      <div className="text-zinc-500 text-[10px] pt-1 border-t border-zinc-900">
+                        &quot;You said your favorite color is navy blue.&quot; (Chained natively via {`agent.strategy`})
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between text-[11px] text-zinc-500 border-b border-zinc-900 pb-2">
+                      <span className="text-cyan-400">provider.generate(request) // Stateless</span>
+                      <span className="text-zinc-400 text-[10px]">User-Managed History</span>
+                    </div>
+                    <div className="space-y-1.5 text-[11px]">
+                      <div className="text-zinc-400">
+                        chat_history = [Message(role=&quot;user&quot;, content=&quot;Recommend a Go KV store&quot;)]
+                      </div>
+                      <div className="text-cyan-300">
+                        resp = provider.generate(GenerationRequest(messages=chat_history))
+                      </div>
+                      <div className="text-zinc-500 text-[10px] pt-1 border-t border-zinc-900">
+                        Zero hidden state. Evidor never alters, prunes, or summarises your messages behind your back.
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+              <span>{paradigmMode === 'stateful' ? 'agent.send() / send_async()' : 'provider.generate(request)'}</span>
+              <Link href="/docs#stateful-conversations" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
+                <span>View Architecture Guide</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* BENTO CARD 2: NATIVE PROVIDER COMPACTION */}
+        {/* ========================================================================= */}
+        {(activeFilter === 'all' || activeFilter === 'compaction') && (
+          <div className="p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-blue-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
+            <div className="absolute top-0 right-0 w-60 h-60 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-950/60 border border-blue-800/60 flex items-center justify-center text-blue-400">
+                  <Database className="w-4 h-4" />
+                </div>
+                <div className="flex items-center gap-1 p-0.5 rounded-md bg-zinc-950 border border-zinc-800 text-[10px] font-mono">
+                  {(['openai', 'gemini', 'anthropic'] as const).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setCompactionProvider(p)}
+                      className={`px-1.5 py-0.5 rounded capitalize ${
+                        compactionProvider === p
+                          ? 'bg-zinc-800 text-white font-medium'
+                          : 'text-zinc-500 hover:text-zinc-300'
+                      }`}
+                    >
+                      {p === 'gemini' ? 'Gemini' : p === 'anthropic' ? 'Claude' : 'OpenAI'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <h3 className="text-base font-bold text-white tracking-tight mb-1.5">
+                Native Provider Compaction
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
+                Context management and turn compaction are offloaded directly to model providers rather than hitting artificial local limits.
+              </p>
+
+              {/* Dynamic Strategy Box */}
+              <div className="rounded-xl bg-black border border-white/[0.06] p-3 font-mono text-[11px] space-y-2">
+                {compactionProvider === 'openai' && (
+                  <>
+                    <div className="flex justify-between text-zinc-400 text-[10px]">
+                      <span>STRATEGY: response_chain</span>
+                      <span className="text-emerald-400">compact_threshold=100000</span>
+                    </div>
+                    <div className="text-zinc-300">
+                      Chains turns via Responses API <code className="text-emerald-400">previous_response_id</code>. Server-side compaction preserves opaque summary states.
+                    </div>
+                  </>
+                )}
+                {compactionProvider === 'gemini' && (
+                  <>
+                    <div className="flex justify-between text-zinc-400 text-[10px]">
+                      <span>STRATEGY: interaction_chain</span>
+                      <span className="text-blue-400">Google Interactions API</span>
+                    </div>
+                    <div className="text-zinc-300">
+                      Chains turns via <code className="text-blue-400">previous_interaction_id</code>. State is persisted natively on Google servers.
+                    </div>
+                  </>
+                )}
+                {compactionProvider === 'anthropic' && (
+                  <>
+                    <div className="flex justify-between text-zinc-400 text-[10px]">
+                      <span>STRATEGY: stateless_replay</span>
+                      <span className="text-purple-400">Prompt Caching + Compaction</span>
+                    </div>
+                    <div className="text-zinc-300">
+                      Caches prompt prefix with ephemeral KV-cache (90% savings). Replays Claude native <code className="text-purple-400">compaction</code> blocks.
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+              <span>compact_threshold=100000</span>
+              <Link href="/docs#native-compaction" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
+                <span>Docs</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* BENTO CARD 3: THINKING & REASONING MODE - Span 2 */}
+        {/* ========================================================================= */}
+        {(activeFilter === 'all' || activeFilter === 'thinking') && (
+          <div className="md:col-span-2 p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-purple-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-purple-950/60 border border-purple-800/60 flex items-center justify-center text-purple-400">
+                    <BrainCircuit className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
+                      <span>Configurable Thinking &amp; Reasoning</span>
+                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-purple-400/10 text-purple-400 border border-purple-400/20">
+                        GPT-6 • Claude • Gemini
+                      </span>
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 p-0.5 rounded-md bg-zinc-950 border border-zinc-800 text-[11px] font-mono">
+                  {(['openai', 'anthropic', 'gemini'] as const).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setThinkingModel(m)}
+                      className={`px-2 py-0.5 rounded capitalize ${
+                        thinkingModel === m
+                          ? 'bg-zinc-800 text-white font-medium'
+                          : 'text-zinc-500 hover:text-zinc-300'
+                      }`}
+                    >
+                      {m === 'openai' ? 'OpenAI (effort)' : m === 'anthropic' ? 'Anthropic (budget)' : 'Gemini (level)'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-xl mb-4">
+                First-class reasoning configuration via typed configs or intuitive shorthands. Inspect intermediate scratchpads via <code className="text-zinc-200 font-mono">response.thinking</code>, track reasoning tokens, and automatically replay cryptographic signatures across multi-turn tool loops.
+              </p>
+
+              {/* Dynamic Thinking Box */}
+              <div className="rounded-xl bg-black border border-white/[0.06] p-3.5 space-y-2 font-mono text-xs">
+                <div className="flex items-center justify-between text-[11px] border-b border-zinc-900 pb-2">
+                  <span className="text-purple-300">
+                    {thinkingModel === 'openai'
+                      ? 'OpenAIProvider(model="gpt-6-astra", thinking="high")'
+                      : thinkingModel === 'anthropic'
+                      ? 'AnthropicProvider(model="claude-3-7-sonnet", thinking=4096)'
+                      : 'GeminiProvider(model="gemini-3.8-flash", thinking="high")'}
+                  </span>
+                  <span className="text-zinc-500 text-[10px]">Cryptographic Signatures Preserved</span>
+                </div>
+
+                <div className="p-2.5 rounded bg-zinc-950 border border-zinc-800/80 space-y-1">
+                  <div className="text-zinc-500 text-[10px]">INTERNAL SCRATCHPAD (response.thinking):</div>
+                  <div className="text-purple-300/90 text-[11px]">
+                    &quot;1. Analyzing dependencies... 2. Inverting interface contract... 3. Verifying signature...&quot;
+                  </div>
+                </div>
+
+                <div className="flex justify-between text-[10px] text-zinc-400 pt-1">
+                  <span>Reasoning Tokens: 384</span>
+                  <span className="text-emerald-400">Tool Calls Verified &amp; Signed</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+              <span>response.thinking &amp; response.usage.reasoning_tokens</span>
+              <Link href="/docs#thinking-mode" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
+                <span>View Thinking Guide</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* BENTO CARD 4: ASYNC-FIRST & CONCURRENT TOOLS */}
+        {/* ========================================================================= */}
+        {(activeFilter === 'all' || activeFilter === 'async_mcp') && (
+          <div className="p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-emerald-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
+            <div className="absolute top-0 right-0 w-60 h-60 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-950/60 border border-emerald-800/60 flex items-center justify-center text-emerald-400">
+                  <Zap className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">
+                  asyncio.gather
+                </span>
+              </div>
+
+              <h3 className="text-base font-bold text-white tracking-tight mb-1.5">
+                Concurrent Multi-Tool Engine
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
+                When an LLM emits multiple tool calls in a single turn, Evidor dispatches them concurrently via <code className="text-zinc-200 font-mono">asyncio.gather()</code>, slashing turn latency in complex multi-step workflows.
+              </p>
+
+              <div className="rounded-xl bg-black border border-white/[0.06] p-3 space-y-1.5 font-mono text-[11px]">
+                <div className="flex justify-between text-[10px] text-zinc-500">
+                  <span>DISPATCH: Single Turn</span>
+                  <span className="text-emerald-400">Parallel (Concurrent)</span>
+                </div>
+                <div className="p-1.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300">
+                  ⚡ fetch_user_profile(id=42)
+                </div>
+                <div className="p-1.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300">
+                  ⚡ fetch_recent_orders(id=42)
+                </div>
+                <div className="text-[10px] text-zinc-500 pt-1">
+                  Event loop guards raise <code className="text-rose-400">RuntimeError</code> if sync calls are misused.
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+              <span>await agent.send_async(...)</span>
+              <Link href="/docs#concurrent-tools" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
+                <span>Docs</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* BENTO CARD 5: MODEL CONTEXT PROTOCOL (MCP) - Span 2 */}
+        {/* ========================================================================= */}
+        {(activeFilter === 'all' || activeFilter === 'async_mcp') && (
           <div className="md:col-span-2 p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-emerald-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -96,7 +429,7 @@ export function CapabilitiesSection({ version }: { version: string }) {
                     <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
                       <span>Model Context Protocol (MCP)</span>
                       <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">
-                        v1.3+
+                        stdio • HTTP • SSE
                       </span>
                     </h3>
                   </div>
@@ -120,7 +453,7 @@ export function CapabilitiesSection({ version }: { version: string }) {
               </div>
 
               <p className="text-xs text-zinc-400 leading-relaxed max-w-xl mb-4">
-                Connect agents seamlessly to external MCP servers. Evidor automatically discovers tools, maps parameters, isolates namespaces to prevent name collisions, and cleanly terminates subprocesses when finished.
+                Connect agents seamlessly to external MCP servers with automatic tool discovery, argument validation, and collision prevention. Use <code className="text-zinc-200 font-mono">mcp_client</code> to share a single client across multiple agents in FastAPI without spawning duplicate subprocesses.
               </p>
 
               {/* Interactive Micro-Simulator for MCP */}
@@ -168,52 +501,44 @@ export function CapabilitiesSection({ version }: { version: string }) {
         )}
 
         {/* ========================================================================= */}
-        {/* BENTO CARD 2: AUTOMATIC RETRIES & JITTER */}
+        {/* BENTO CARD 6: EVIDENCE STORE & WEBPAGE READER */}
         {/* ========================================================================= */}
-        {(activeFilter === 'all' || activeFilter === 'resilience') && (
+        {(activeFilter === 'all' || activeFilter === 'async_mcp') && (
           <div className="p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-amber-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
-            <div className="absolute top-0 right-0 w-60 h-60 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="w-8 h-8 rounded-lg bg-amber-950/60 border border-amber-800/60 flex items-center justify-center text-amber-400">
-                  <RotateCw className="w-4 h-4" />
+                  <Boxes className="w-4 h-4" />
                 </div>
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20">
-                  v1.4+
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20">
+                  v1.5+
                 </span>
               </div>
 
               <h3 className="text-base font-bold text-white tracking-tight mb-1.5">
-                Coordinated LLM Retries
+                Evidence Store &amp; Web Reader
               </h3>
               <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                Auto-retries on transient 429 rate limits, 5xx server drops, and network timeouts. Respects provider <code className="text-zinc-200 font-mono">Retry-After</code> headers with exponential backoff and full jitter.
+                Equip research agents with <code className="text-zinc-200 font-mono">EvidenceStore</code> to prevent hallucinations across multi-step research, and <code className="text-zinc-200 font-mono">read_webpage</code> to strip HTML boilerplate with character bounds.
               </p>
 
-              {/* Visual Retry Waterfall Timeline */}
               <div className="rounded-xl bg-black border border-white/[0.06] p-3 space-y-2 font-mono text-[11px]">
-                <div className="flex items-center justify-between text-zinc-500">
-                  <span className="text-zinc-400">Attempt 1</span>
-                  <span className="text-rose-400 font-medium">HTTP 429 Rate Limit</span>
+                <div className="flex justify-between text-zinc-400 text-[10px]">
+                  <span>store.tools: 3 primitives</span>
+                  <span className="text-amber-400">store.to_markdown()</span>
                 </div>
-                <div className="flex items-center gap-2 pl-3 text-[10px] text-zinc-500 border-l border-zinc-800">
-                  <RotateCw className="w-2.5 h-2.5 text-amber-400 animate-spin" />
-                  <span>Backoff: 0.5s + jitter ~0.72s</span>
+                <div className="text-zinc-300">
+                  [ev_1] architecture: SQLite zero-network vs PostgreSQL concurrency
                 </div>
-                <div className="flex items-center justify-between text-zinc-300 pt-1 border-t border-zinc-900">
-                  <span className="text-white font-medium">Attempt 2</span>
-                  <span className="text-emerald-400 font-medium flex items-center gap-1">
-                    <Check className="w-3 h-3" />
-                    <span>200 OK via OpenAI</span>
-                  </span>
+                <div className="text-zinc-500 text-[10px] pt-1">
+                  Bounded to 15,000 chars per page fetch.
                 </div>
               </div>
             </div>
 
             <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
-              <span>RetryConfig(max_retries=3)</span>
-              <Link href="/docs#retries" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
+              <span>EvidenceStore &amp; read_webpage</span>
+              <Link href="/docs#evidence-store" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
                 <span>Docs</span>
                 <ArrowUpRight className="w-3 h-3" />
               </Link>
@@ -222,7 +547,7 @@ export function CapabilitiesSection({ version }: { version: string }) {
         )}
 
         {/* ========================================================================= */}
-        {/* BENTO CARD 3: ACTOR TELEMETRY & OBSERVABILITY - Span 2 */}
+        {/* BENTO CARD 7: TELEMETRY ACTOR & THINKING VISIBILITY */}
         {/* ========================================================================= */}
         {(activeFilter === 'all' || activeFilter === 'telemetry') && (
           <div className="md:col-span-2 p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-purple-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
@@ -236,7 +561,7 @@ export function CapabilitiesSection({ version }: { version: string }) {
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
-                      <span>Telemetry Actor Runtime</span>
+                      <span>Telemetry Actor Runtime &amp; Thinking Visibility</span>
                       <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-purple-400/10 text-purple-400 border border-purple-400/20">
                         &lt;1µs overhead
                       </span>
@@ -263,22 +588,22 @@ export function CapabilitiesSection({ version }: { version: string }) {
               </div>
 
               <p className="text-xs text-zinc-400 leading-relaxed max-w-xl mb-4">
-                Asynchronous producer-consumer actor architecture. Event emission on the agent thread takes under 1 microsecond. Formatting, batching, and network transport happen on a dedicated background worker thread (<code className="text-zinc-200 font-mono">Evidor-Telemetry-Worker</code>).
+                Asynchronous producer-consumer actor runtime. Event dispatch takes under 1µs on the agent thread. Toggle <code className="text-zinc-200 font-mono">capture_thinking=True</code> to stream intermediate reasoning steps to trace dashboards, or keep it off to redact thoughts while preserving token counts.
               </p>
 
               {/* Span Tree Preview */}
               <div className="rounded-xl bg-black border border-white/[0.06] p-3.5 font-mono text-[11px] space-y-1.5 text-zinc-400 overflow-x-auto">
                 <div className="flex items-center justify-between text-zinc-300 font-medium">
                   <span className="text-purple-300">agent.run</span>
-                  <span className="text-zinc-500 text-[10px]">185ms • 412 tokens</span>
+                  <span className="text-zinc-500 text-[10px]">185ms • 412 tokens (128 reasoning)</span>
                 </div>
                 <div className="pl-4 border-l border-zinc-800 space-y-1">
                   <div className="flex items-center justify-between text-zinc-400">
-                    <span>├── llm.gpt-4.1-mini</span>
+                    <span>├── llm.gpt-6-astra [gen_ai.reasoning.content: &quot;...&quot;]</span>
                     <span className="text-emerald-400 text-[10px]">120ms</span>
                   </div>
                   <div className="flex items-center justify-between text-zinc-400">
-                    <span>└── tool.mcp.search_products</span>
+                    <span>└── tool.amazon.search_products</span>
                     <span className="text-emerald-400 text-[10px]">65ms</span>
                   </div>
                 </div>
@@ -287,7 +612,7 @@ export function CapabilitiesSection({ version }: { version: string }) {
 
             <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
               <span>pip install &quot;evidor[{telemetryTab}]&quot;</span>
-              <Link href="/docs#telemetry-overview" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
+              <Link href="/docs#telemetry-thinking" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
                 <span>Observability Guide</span>
                 <ArrowUpRight className="w-3 h-3" />
               </Link>
@@ -296,7 +621,7 @@ export function CapabilitiesSection({ version }: { version: string }) {
         )}
 
         {/* ========================================================================= */}
-        {/* BENTO CARD 4: PII PROTECTION & PRIVACY */}
+        {/* BENTO CARD 8: PRIVACY & PII REDACTION */}
         {/* ========================================================================= */}
         {(activeFilter === 'all' || activeFilter === 'telemetry') && (
           <div className="p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-cyan-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
@@ -352,252 +677,7 @@ export function CapabilitiesSection({ version }: { version: string }) {
             </div>
           </div>
         )}
-
-        {/* ========================================================================= */}
-        {/* BENTO CARD 5: BOUNDED CONTEXT COMPACTION */}
-        {/* ========================================================================= */}
-        {(activeFilter === 'all' || activeFilter === 'runtime') && (
-          <div className="p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-blue-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
-            <div className="absolute top-0 right-0 w-60 h-60 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
-
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-950/60 border border-blue-800/60 flex items-center justify-center text-blue-400">
-                  <Database className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-400/10 text-blue-400 border border-blue-400/20">
-                  16k tokens • 50 turns
-                </span>
-              </div>
-
-              <h3 className="text-base font-bold text-white tracking-tight mb-1.5">
-                Bounded Context Compaction
-              </h3>
-              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                Automatically prevents context overflow by compacting older conversation turns using background LLM summarization.
-              </p>
-
-              {/* 3-Layer Compaction Stack */}
-              <div className="space-y-1.5 font-mono text-[11px]">
-                <div className="p-2 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-between">
-                  <span className="text-white font-medium flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    <span>System Prompt</span>
-                  </span>
-                  <span className="text-zinc-500 text-[10px]">Immutable Anchor</span>
-                </div>
-                <div className="p-2 rounded bg-zinc-900/60 border border-zinc-800/80 flex items-center justify-between">
-                  <span className="text-blue-300 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                    <span>Compacted Summary</span>
-                  </span>
-                  <span className="text-zinc-500 text-[10px]">is_summary=True</span>
-                </div>
-                <div className="p-2 rounded bg-zinc-900/40 border border-zinc-800/60 flex items-center justify-between">
-                  <span className="text-zinc-300 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
-                    <span>Recent Turns</span>
-                  </span>
-                  <span className="text-zinc-500 text-[10px]">Full Fidelity</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
-              <span>summarization_model=&quot;gpt-4.1-mini&quot;</span>
-              <Link href="/docs#context-management" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
-                <span>Docs</span>
-                <ArrowUpRight className="w-3 h-3" />
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* BENTO CARD 6: NATIVE ASYNC CONVERSATIONS */}
-        {/* ========================================================================= */}
-        {(activeFilter === 'all' || activeFilter === 'runtime') && (
-          <div className="p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-emerald-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-950/60 border border-emerald-800/60 flex items-center justify-center text-emerald-400">
-                  <Zap className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">
-                  send_async
-                </span>
-              </div>
-
-              <h3 className="text-base font-bold text-white tracking-tight mb-1.5">
-                Native Async Execution Loop
-              </h3>
-              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                Runs directly on caller event loops (FastAPI, Tornado) without thread pool hops. Preserves shared connection pools, locks, and <code className="text-zinc-200 font-mono">contextvars</code>.
-              </p>
-
-              <div className="rounded-xl bg-black border border-white/[0.06] p-3 font-mono text-[11px] space-y-1.5 text-zinc-300">
-                <div className="text-zinc-500 text-[10px]">COROUTINE DISPATCH:</div>
-                <div className="text-emerald-400">response = await agent.send_async(msg)</div>
-                <div className="text-zinc-500 text-[10px] pt-1">
-                  Async tools execute concurrently via asyncio without blocking the event loop.
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
-              <span>FastAPI / Tornado Native</span>
-              <Link href="/docs#async-conversations" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
-                <span>Docs</span>
-                <ArrowUpRight className="w-3 h-3" />
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* BENTO CARD 7: SCOPED FILESYSTEM SANDBOX */}
-        {/* ========================================================================= */}
-        {(activeFilter === 'all' || activeFilter === 'mcp_tools') && (
-          <div className="p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-amber-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300">
-                  <FolderTree className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-900 text-zinc-400 border border-zinc-800">
-                  6 Scoped Tools
-                </span>
-              </div>
-
-              <h3 className="text-base font-bold text-white tracking-tight mb-1.5">
-                Scoped Filesystem Tools
-              </h3>
-              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                Zero-dependency sandbox suite for listing, reading, searching, creating, and modifying files bounded strictly under a target directory root.
-              </p>
-
-              <div className="grid grid-cols-3 gap-1.5 font-mono text-[10px] text-center">
-                <div className="p-1.5 rounded bg-black/60 border border-zinc-800 text-zinc-300">list_files</div>
-                <div className="p-1.5 rounded bg-black/60 border border-zinc-800 text-zinc-300">read_file</div>
-                <div className="p-1.5 rounded bg-black/60 border border-zinc-800 text-zinc-300">search_files</div>
-                <div className="p-1.5 rounded bg-black/60 border border-zinc-800 text-zinc-300">create_file</div>
-                <div className="p-1.5 rounded bg-black/60 border border-zinc-800 text-zinc-300">write_file</div>
-                <div className="p-1.5 rounded bg-black/60 border border-zinc-800 text-zinc-300">delete_file</div>
-              </div>
-            </div>
-
-            <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
-              <span>filesystem_tools(&quot;./project&quot;)</span>
-              <Link href="/docs#filesystem-tools" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
-                <span>Docs</span>
-                <ArrowUpRight className="w-3 h-3" />
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* BENTO CARD 8: PROVIDER-NEUTRAL WEB SEARCH */}
-        {/* ========================================================================= */}
-        {(activeFilter === 'all' || activeFilter === 'mcp_tools') && (
-          <div className="p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-emerald-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300">
-                  <Globe className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-900 text-zinc-400 border border-zinc-800">
-                  Stdlib Only
-                </span>
-              </div>
-
-              <h3 className="text-base font-bold text-white tracking-tight mb-1.5">
-                Standard-Library Web Search
-              </h3>
-              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                Pluggable search using only Python standard library. Bundles adapters for Tavily, Exa, and Brave Search with zero extra pip packages.
-              </p>
-
-              <div className="rounded-xl bg-black border border-white/[0.06] p-3 font-mono text-[11px] text-zinc-400 space-y-1">
-                <div className="text-zinc-500 text-[10px]">PLUGGABLE PROVIDERS:</div>
-                <div className="flex items-center justify-between text-zinc-300">
-                  <span>TavilySearchProvider()</span>
-                  <span className="text-zinc-600">std lib</span>
-                </div>
-                <div className="flex items-center justify-between text-zinc-300">
-                  <span>ExaSearchProvider()</span>
-                  <span className="text-zinc-600">std lib</span>
-                </div>
-                <div className="flex items-center justify-between text-zinc-300">
-                  <span>BraveSearchProvider()</span>
-                  <span className="text-zinc-600">std lib</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
-              <span>web_search(provider)</span>
-              <Link href="/docs#web-search" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
-                <span>Docs</span>
-                <ArrowUpRight className="w-3 h-3" />
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* BENTO CARD 9: MULTI-PROVIDER & PYTHON 3.14 */}
-        {/* ========================================================================= */}
-        {(activeFilter === 'all' || activeFilter === 'runtime') && (
-          <div className="p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-zinc-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300">
-                  <Cpu className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">
-                  Python 3.10 - 3.14
-                </span>
-              </div>
-
-              <h3 className="text-base font-bold text-white tracking-tight mb-1.5">
-                Universal Model Protocol
-              </h3>
-              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                Swap seamlessly between OpenAI, Anthropic Claude, Google Gemini, and custom backends. Tested across all modern Python runtimes up to Python 3.14.
-              </p>
-
-              <div className="grid grid-cols-2 gap-1.5 font-mono text-[11px]">
-                <div className="p-2 rounded bg-black border border-zinc-800/80 text-zinc-300">
-                  <div className="font-semibold text-white">OpenAI</div>
-                  <div className="text-[10px] text-zinc-500">gpt-4.1-mini</div>
-                </div>
-                <div className="p-2 rounded bg-black border border-zinc-800/80 text-zinc-300">
-                  <div className="font-semibold text-white">Anthropic</div>
-                  <div className="text-[10px] text-zinc-500">claude-3-5</div>
-                </div>
-                <div className="p-2 rounded bg-black border border-zinc-800/80 text-zinc-300">
-                  <div className="font-semibold text-white">Gemini</div>
-                  <div className="text-[10px] text-zinc-500">gemini-2.5</div>
-                </div>
-                <div className="p-2 rounded bg-black border border-zinc-800/80 text-zinc-300">
-                  <div className="font-semibold text-white">Custom</div>
-                  <div className="text-[10px] text-zinc-500">ModelProvider</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
-              <span>ModelProvider Protocol</span>
-              <Link href="/docs#supported-providers" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
-                <span>Docs</span>
-                <ArrowUpRight className="w-3 h-3" />
-              </Link>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
 }
-

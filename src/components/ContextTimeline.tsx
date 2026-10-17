@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, Check, Zap, Server, Database, Sparkles } from 'lucide-react';
 import { CodeBlock } from '@/components/CodeBlock';
 import { CODE_EXAMPLES } from '@/lib/constants';
 
@@ -8,7 +8,7 @@ export function ContextTimeline() {
     <div className="w-full space-y-8">
       {/* Visual Timeline Card */}
       <div className="rounded-xl bg-[#09090b] border border-white/[0.08] p-6 sm:p-8 relative overflow-hidden">
-        <div className="max-w-2xl mx-auto space-y-4">
+        <div className="max-w-3xl mx-auto space-y-4">
           {/* Step 1 */}
           <div className="p-3.5 rounded-lg bg-zinc-950 border border-white/[0.06] flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -16,12 +16,12 @@ export function ContextTimeline() {
                 01
               </span>
               <div>
-                <div className="text-xs font-semibold text-white">Turn Accumulation</div>
-                <div className="text-[11px] text-zinc-500">History grows across consecutive user prompts</div>
+                <div className="text-xs font-semibold text-white">Turn Execution (Delta Only)</div>
+                <div className="text-[11px] text-zinc-500">Only newest turn messages sent — no re-passing entire conversation histories</div>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded">
-              Approaching limits
+            <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-900/50 px-2 py-0.5 rounded">
+              Zero Redundant Tokens
             </span>
           </div>
 
@@ -36,12 +36,12 @@ export function ContextTimeline() {
                 02
               </span>
               <div>
-                <div className="text-xs font-semibold text-white">Compaction Engine Fired</div>
-                <div className="text-[11px] text-zinc-400">Older messages synthesized via model summarizer</div>
+                <div className="text-xs font-semibold text-white">Provider Native Context Strategy</div>
+                <div className="text-[11px] text-zinc-400">Transparently mapped to each provider&apos;s optimal context infrastructure</div>
               </div>
             </div>
             <span className="text-[11px] font-mono text-white bg-zinc-800 px-2 py-0.5 rounded">
-              summarization_model
+              agent.strategy
             </span>
           </div>
 
@@ -49,27 +49,47 @@ export function ContextTimeline() {
             <ArrowDown className="w-3.5 h-3.5 text-zinc-600" />
           </div>
 
-          {/* Step 3 */}
+          {/* Step 3: Provider Architecture Matrix */}
           <div className="p-4 rounded-lg bg-zinc-950 border border-white/[0.06] space-y-3">
             <div className="flex items-center justify-between text-xs">
               <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 font-semibold">
-                Synthesized Bounded State
+                Provider-Native Context &amp; Compaction Engine
               </span>
-              <span className="text-zinc-500 font-mono text-[11px]">3 Layers</span>
+              <span className="text-zinc-500 font-mono text-[11px]">3 Strategies</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-              <div className="p-2.5 rounded bg-zinc-900/80 border border-zinc-800">
-                <div className="font-semibold text-white text-[11px]">System Prompt</div>
-                <div className="text-[10px] text-zinc-500 mt-1">100% intact, immutable anchor</div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+              {/* OpenAI */}
+              <div className="p-3 rounded bg-zinc-900/80 border border-zinc-800 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-white text-[11px]">OpenAI</span>
+                  <span className="text-[10px] font-mono text-emerald-400">response_chain</span>
+                </div>
+                <p className="text-[11px] text-zinc-400 leading-relaxed">
+                  Server-side chaining via Responses API <code className="text-zinc-200 font-mono">previous_response_id</code>. Automatic server-side compaction at <code className="text-zinc-200 font-mono">compact_threshold</code>.
+                </p>
               </div>
-              <div className="p-2.5 rounded bg-zinc-900/80 border border-zinc-800">
-                <div className="font-semibold text-zinc-200 text-[11px]">Bounded Summary</div>
-                <div className="text-[10px] text-zinc-500 mt-1">is_summary=True payload</div>
+
+              {/* Gemini */}
+              <div className="p-3 rounded bg-zinc-900/80 border border-zinc-800 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-white text-[11px]">Google Gemini</span>
+                  <span className="text-[10px] font-mono text-blue-400">interaction_chain</span>
+                </div>
+                <p className="text-[11px] text-zinc-400 leading-relaxed">
+                  Server-side state chaining via Interactions API <code className="text-zinc-200 font-mono">previous_interaction_id</code>. Google manages state persistence across turns.
+                </p>
               </div>
-              <div className="p-2.5 rounded bg-zinc-900/80 border border-zinc-800">
-                <div className="font-semibold text-white text-[11px]">Recent Turns</div>
-                <div className="text-[10px] text-zinc-500 mt-1">Full fidelity dialogue</div>
+
+              {/* Anthropic */}
+              <div className="p-3 rounded bg-zinc-900/80 border border-zinc-800 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-white text-[11px]">Anthropic Claude</span>
+                  <span className="text-[10px] font-mono text-purple-400">stateless_replay</span>
+                </div>
+                <p className="text-[11px] text-zinc-400 leading-relaxed">
+                  Ephemeral Prompt Caching (<code className="text-zinc-200 font-mono">cache_control</code>) cuts cost by 90%. Emits native <code className="text-zinc-200 font-mono">compaction</code> blocks to prune older turns.
+                </p>
               </div>
             </div>
           </div>
@@ -85,12 +105,12 @@ export function ContextTimeline() {
                 04
               </span>
               <div>
-                <div className="text-xs font-semibold text-white">Next Model Call Dispatched</div>
-                <div className="text-[11px] text-zinc-500">Safely bounded within context token budget</div>
+                <div className="text-xs font-semibold text-white">Automated Compaction Triggered</div>
+                <div className="text-[11px] text-zinc-500">Cross-turn tokens evaluated against native <code className="text-zinc-300 font-mono">compact_threshold</code> without hitting limits</div>
               </div>
             </div>
             <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-900/50 px-2 py-0.5 rounded">
-              Tokens Bounded
+              Native Compaction
             </span>
           </div>
         </div>
@@ -100,34 +120,34 @@ export function ContextTimeline() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <div className="space-y-3">
           <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">
-            Tuning Limits
+            Native Compaction
           </div>
           <h3 className="text-base font-bold text-white tracking-tight">
-            Granular Budget Controls
+            Configurable Token Thresholds
           </h3>
           <p className="text-xs text-zinc-400 leading-relaxed">
-            By default, Evidor enforces a 16,000 token window (<code className="text-zinc-200 font-mono">context_window=16_000</code>) and a 50 message retention threshold (<code className="text-zinc-200 font-mono">max_messages=50</code>).
+            Configure native compaction on <code className="text-zinc-200 font-mono">OpenAIProvider</code> or <code className="text-zinc-200 font-mono">AnthropicProvider</code> via <code className="text-zinc-200 font-mono">compact_threshold</code>, or pass it directly to the <code className="text-zinc-200 font-mono">Agent</code> facade.
           </p>
           <CodeBlock
-            code={CODE_EXAMPLES.contextManagement}
-            filename="limits_config.py"
+            code={CODE_EXAMPLES.nativeCompaction}
+            filename="compaction_setup.py"
             language="python"
           />
         </div>
 
         <div className="space-y-3">
           <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">
-            Cost Optimization
+            State Inspection
           </div>
           <h3 className="text-base font-bold text-white tracking-tight">
-            Decoupled Summarization Model
+            Inspecting Strategy &amp; Response IDs
           </h3>
           <p className="text-xs text-zinc-400 leading-relaxed">
-            Configure a fast, inexpensive model for compaction summaries while reserving your flagship model for primary generation.
+            Inspect the underlying provider context strategy (<code className="text-zinc-200 font-mono">agent.strategy</code>), current interaction/response ID (<code className="text-zinc-200 font-mono">agent.last_response_id</code>), or reset state with <code className="text-zinc-200 font-mono">agent.reset()</code>.
           </p>
           <CodeBlock
-            code={CODE_EXAMPLES.summarizationModel}
-            filename="summarizer_setup.py"
+            code={CODE_EXAMPLES.inspectingState}
+            filename="inspect_state.py"
             language="python"
           />
         </div>

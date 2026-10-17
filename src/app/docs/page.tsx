@@ -22,6 +22,11 @@ import {
   Search,
   X,
   List,
+  BrainCircuit,
+  Boxes,
+  Workflow,
+  Database,
+  Cpu,
 } from 'lucide-react';
 
 const DOCS_SECTIONS = [
@@ -34,20 +39,38 @@ const DOCS_SECTIONS = [
     ],
   },
   {
-    category: 'Agent & Sessions',
+    category: 'Two Execution Paradigms',
     items: [
-      { id: 'multi-turn', title: 'Multi-turn Conversations' },
+      { id: 'two-paradigms', title: 'Core Architecture: Two Paradigms' },
+      { id: 'stateful-conversations', title: 'Stateful Multi-Turn (Agent)' },
       { id: 'system-prompts', title: 'System Prompts' },
-      { id: 'retries', title: 'LLM Retries & Backoff' },
-      { id: 'async-conversations', title: 'Native Async Conversations' },
-      { id: 'history-management', title: 'Inspecting & Resetting History' },
+      { id: 'context-architecture', title: 'Context Under The Hood' },
+      { id: 'native-compaction', title: 'Native Provider Compaction' },
+      { id: 'inspecting-state', title: 'Inspecting & Resetting State' },
     ],
   },
   {
-    category: 'Context Engine',
+    category: 'Stateless LLM Calls',
     items: [
-      { id: 'context-management', title: 'Context Window & Compaction' },
-      { id: 'configurable-summarization', title: 'Configurable Summarization' },
+      { id: 'stateless-calls', title: 'Stateless provider.generate()' },
+      { id: 'user-managed-history', title: 'User-Managed Message History' },
+      { id: 'stateless-tools', title: 'Stateless Tool Calling' },
+    ],
+  },
+  {
+    category: 'Reasoning & Thinking Mode',
+    items: [
+      { id: 'thinking-mode', title: 'Configurable Thinking Flags' },
+      { id: 'thinking-inspection', title: 'Inspecting Reasoning Steps' },
+      { id: 'thinking-signatures', title: 'Cryptographic Signatures' },
+    ],
+  },
+  {
+    category: 'Async Execution Engine',
+    items: [
+      { id: 'async-conversations', title: 'Native Async Conversations' },
+      { id: 'concurrent-tools', title: 'Concurrent Multi-Tool Gather' },
+      { id: 'loop-guards', title: 'Event Loop Guards & Teardown' },
     ],
   },
   {
@@ -60,36 +83,42 @@ const DOCS_SECTIONS = [
     ],
   },
   {
-    category: 'Model Context Protocol (MCP)',
-    items: [
-      { id: 'mcp-overview', title: 'MCP Overview & Stdio Servers' },
-      { id: 'mcp-remote', title: 'Streamable HTTP & SSE Transports' },
-      { id: 'mcp-shared', title: 'Shared MCPClient Across Agents' },
-    ],
-  },
-  {
     category: 'Built-in Toolkits',
     items: [
       { id: 'builtin-tools', title: 'Calculator & Current Time' },
       { id: 'filesystem-tools', title: 'Scoped Filesystem Tools' },
       { id: 'web-search', title: 'Provider-Neutral Web Search' },
+      { id: 'webpage-reader', title: 'Webpage Reader (read_webpage)' },
+      { id: 'evidence-store', title: 'Evidence Store (EvidenceStore)' },
+    ],
+  },
+  {
+    category: 'Model Context Protocol (MCP)',
+    items: [
+      { id: 'mcp-overview', title: 'MCP Overview & Stdio' },
+      { id: 'mcp-async', title: 'Async MCP with send_async' },
+      { id: 'mcp-remote', title: 'Streamable HTTP & SSE Transports' },
+      { id: 'mcp-multiple', title: 'Connecting Multiple MCP Servers' },
+      { id: 'mcp-shared', title: 'Shared MCPClient Across Agents' },
+      { id: 'mcp-standalone', title: 'Standalone MCPClient Usage' },
     ],
   },
   {
     category: 'Telemetry & Observability',
     items: [
-      { id: 'telemetry-overview', title: 'Telemetry Architecture & Built-in Sinks' },
+      { id: 'telemetry-overview', title: 'Decoupled Actor Runtime' },
       { id: 'telemetry-adapters', title: 'OpenTelemetry, Langfuse, Phoenix, Prometheus' },
-      { id: 'telemetry-privacy', title: 'PII Protection (Metadata-Only Mode)' },
+      { id: 'telemetry-thinking', title: 'Thinking Visibility (capture_thinking)' },
+      { id: 'telemetry-privacy', title: 'Privacy & PII (capture_content=False)' },
+      { id: 'custom-sinks', title: 'Custom Sinks & Tuning' },
     ],
   },
   {
-    category: 'Providers & Low-level API',
+    category: 'Providers & Low-Level API',
     items: [
-      { id: 'low-level-generation', title: 'Low-level GenerationRequest' },
-      { id: 'supported-providers', title: 'Supported Providers & Credentials' },
+      { id: 'supported-providers', title: 'Supported Providers & Modern APIs' },
       { id: 'custom-providers', title: 'Custom ModelProvider Protocol' },
-      { id: 'optional-extras', title: 'Optional Package Extras Summary' },
+      { id: 'optional-extras', title: 'Optional Package Extras' },
     ],
   },
   {
@@ -222,7 +251,7 @@ export default function DocsPage() {
                 DOCUMENTATION
               </div>
               <p className="text-xs text-zinc-500 leading-relaxed">
-                Agent runtime reference, tool primitives, MCP, retries, telemetry, and providers.
+                Stateful &amp; stateless paradigms, native compaction, thinking flags, async engine, MCP, and telemetry.
               </p>
             </div>
 
@@ -233,7 +262,7 @@ export default function DocsPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Filter 23 sections..."
+                placeholder="Filter 32 sections..."
                 className="w-full pl-8 pr-7 py-1.5 text-xs bg-zinc-950 border border-white/[0.08] focus:border-white/20 rounded-md text-zinc-200 placeholder:text-zinc-600 focus:outline-none transition-colors"
               />
               {searchQuery && (
@@ -325,12 +354,12 @@ export default function DocsPage() {
                 Evidor Documentation
               </h1>
               <p className="text-sm text-zinc-400 leading-relaxed">
-                Evidor is an open-source, provider-agnostic runtime for building AI agents. It provides a clean, unified interface for conversational agents across multiple model providers, with built-in context window management, automatic summarization, Model Context Protocol (MCP) server support, exponential retries, and non-blocking telemetry.
+                Evidor is an open-source, provider-agnostic runtime for building AI agents. It provides a clean, modern interface for conversational agents across multiple model providers, with first-class support for stateful and stateless conversations, native context compaction, thinking flags, async-first concurrent execution, MCP, and decoupled telemetry.
               </p>
 
               <div className="p-4 rounded-lg bg-[#09090b] border border-white/[0.08] text-xs text-zinc-400 leading-relaxed">
                 <strong className="text-white block mb-1">Runtime Harness Architecture</strong>
-                Unlike simple SDK wrappers that merely standardize request formats, Evidor acts as an operational runtime: coordinating conversational session state, tracking token budgets, running background summarization compaction, executing native sync and async tool loops, bridging external MCP servers, managing retry budgets, and dispatching non-blocking telemetry trace trees.
+                Unlike simple SDK wrappers that merely standardize request formats, Evidor acts as an operational runtime: coordinating conversational session state, delegating native context compaction to provider engines, executing concurrent async tool loops via <code className="text-zinc-200 font-mono">asyncio.gather()</code>, bridging external MCP servers, managing retry budgets, and dispatching non-blocking telemetry trace trees.
               </div>
             </section>
 
@@ -396,29 +425,63 @@ pip install "evidor[all]"`}
               </p>
             </section>
 
-            {/* 4. MULTI-TURN CONVERSATIONS */}
-            <section id="multi-turn" className="space-y-3 scroll-mt-24">
+            {/* 4. TWO EXECUTION PARADIGMS */}
+            <section id="two-paradigms" className="space-y-3 scroll-mt-24">
+              <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                CORE ARCHITECTURE
+              </div>
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Multi-turn Conversations
+                Core Architecture: Two Execution Paradigms
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                The <code className="text-zinc-200 font-mono">Agent</code> maintains session state across conversation turns. Consecutive calls to <code className="text-zinc-200 font-mono">send()</code> advance the dialogue:
+                Evidor cleanly separates AI execution into two distinct paradigms:
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div className="p-3.5 rounded-lg bg-zinc-950 border border-zinc-800 space-y-2">
+                  <div className="text-white font-semibold flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span>1. Stateful Conversations (Agent) — Recommended</span>
+                  </div>
+                  <p className="text-zinc-400 leading-relaxed">
+                    Conversations maintain state automatically across turns—<strong>you do not have to pass the entire message history each time</strong>. Evidor manages session state, context continuation, and tool execution loops cleanly behind the scenes.
+                  </p>
+                </div>
+                <div className="p-3.5 rounded-lg bg-zinc-950 border border-zinc-800 space-y-2">
+                  <div className="text-white font-semibold flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                    <span>2. Stateless LLM Calls (provider.generate)</span>
+                  </div>
+                  <p className="text-zinc-400 leading-relaxed">
+                    Direct single-turn or user-managed requests with tools, structured outputs, and raw message histories. Available when your application manages its own database storage and persistence.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* 5. STATEFUL CONVERSATIONS */}
+            <section id="stateful-conversations" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Stateful Multi-Turn Conversations (Agent)
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Use <code className="text-zinc-200 font-mono">send()</code> (or <code className="text-zinc-200 font-mono">send_async()</code>) to advance the conversation. Previous turns are remembered without re-passing the conversation history:
               </p>
 
               <CodeBlock
-                code={CODE_EXAMPLES.multiTurn}
-                filename="multi_turn.py"
+                code={CODE_EXAMPLES.statefulMultiTurn}
+                filename="stateful_agent.py"
                 language="python"
               />
             </section>
 
-            {/* 5. SYSTEM PROMPTS */}
+            {/* 6. SYSTEM PROMPTS */}
             <section id="system-prompts" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-white tracking-tight">
                 System Prompts
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                You can configure an initial system prompt when creating an <code className="text-zinc-200 font-mono">Agent</code>. Crucially, the system prompt is preserved across conversation compaction and history resets:
+                Configure an initial system prompt when creating an <code className="text-zinc-200 font-mono">Agent</code>. Evidor delivers the instructions natively across subsequent turns:
               </p>
 
               <CodeBlock
@@ -426,157 +489,242 @@ pip install "evidor[all]"`}
                 filename="system_prompt.py"
                 language="python"
               />
+            </section>
 
-              <div className="p-3 rounded-md bg-zinc-950 border border-zinc-800 text-xs text-zinc-400">
-                <strong className="text-white">Preservation guarantee:</strong> During context compaction, Evidor never compacts or deletes the system prompt. It remains anchored at position 0 of every generation request sent to the provider.
+            {/* 7. CONTEXT UNDER THE HOOD */}
+            <section id="context-architecture" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                How State and Context Are Handled Under the Hood
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Under the hood, Evidor transparently maps stateful conversations to each model provider&apos;s optimal context mechanism, ensuring efficient token usage without requiring you to manually re-send past messages:
+              </p>
+
+              <div className="overflow-x-auto text-xs font-mono">
+                <table className="w-full border border-zinc-800 text-left">
+                  <thead className="bg-zinc-900 text-zinc-300">
+                    <tr>
+                      <th className="p-2.5 border-b border-zinc-800">Provider</th>
+                      <th className="p-2.5 border-b border-zinc-800">Strategy</th>
+                      <th className="p-2.5 border-b border-zinc-800">Architecture</th>
+                      <th className="p-2.5 border-b border-zinc-800">Compaction</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-900 text-zinc-400">
+                    <tr>
+                      <td className="p-2.5 font-semibold text-white">OpenAIProvider</td>
+                      <td className="p-2.5 text-emerald-400">&quot;response_chain&quot;</td>
+                      <td className="p-2.5">Responses API previous_response_id</td>
+                      <td className="p-2.5">Server-side at compact_threshold</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 font-semibold text-white">GeminiProvider</td>
+                      <td className="p-2.5 text-blue-400">&quot;interaction_chain&quot;</td>
+                      <td className="p-2.5">Interactions API previous_interaction_id</td>
+                      <td className="p-2.5">Managed in Interactions API</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 font-semibold text-white">AnthropicProvider</td>
+                      <td className="p-2.5 text-purple-400">&quot;stateless_replay&quot;</td>
+                      <td className="p-2.5">Ephemeral Prompt Caching (KV-cache)</td>
+                      <td className="p-2.5">Native compaction summary blocks</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </section>
 
-            {/* 6. LLM RETRIES & BACKOFF */}
-            <section id="retries" className="space-y-3 scroll-mt-24">
-              <div className="flex items-center gap-2">
-                <RotateCw className="w-4 h-4 text-emerald-400" />
-                <h2 className="text-xl font-bold text-white tracking-tight">
-                  Automatic LLM Retries &amp; Exponential Backoff
-                </h2>
-              </div>
+            {/* 8. NATIVE PROVIDER COMPACTION */}
+            <section id="native-compaction" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Native Provider Compaction (compact_threshold)
+              </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                When requests to an LLM provider fail due to transient network or provider issues, <code className="text-zinc-200 font-mono">Agent</code> automatically retries with exponential backoff and jitter. By default, it retries up to <strong>3 times</strong> starting with a <strong>0.5s</strong> delay (~0.5s, ~1.0s, ~2.0s) on network errors or HTTP 429/5xx server errors. Programming errors (such as 400 Bad Request or ValueError) fail immediately without retrying.
+                For long-running agents and multi-turn workflows, both OpenAI and Anthropic provide native compaction to summarize older context at a token threshold rather than hitting context window limits:
               </p>
 
               <CodeBlock
-                code={CODE_EXAMPLES.retries}
-                filename="retries_config.py"
+                code={CODE_EXAMPLES.nativeCompaction}
+                filename="native_compaction.py"
                 language="python"
               />
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
-                <div className="p-3 rounded-lg bg-[#09090b] border border-white/[0.08] space-y-1">
-                  <div className="font-semibold text-white">Single Coordinated Budget</div>
-                  <p className="text-zinc-500">Underlying SDK client retries are disabled so Evidor exclusively owns retry counts and telemetry tracking.</p>
-                </div>
-                <div className="p-3 rounded-lg bg-[#09090b] border border-white/[0.08] space-y-1">
-                  <div className="font-semibold text-white">Async Non-Blocking Backoff</div>
-                  <p className="text-zinc-500">In <code className="text-zinc-300">send_async()</code>, backoffs await <code className="text-zinc-300">asyncio.sleep()</code> directly on the loop without occupying worker threads.</p>
-                </div>
-                <div className="p-3 rounded-lg bg-[#09090b] border border-white/[0.08] space-y-1">
-                  <div className="font-semibold text-white">Retry-After Support</div>
-                  <p className="text-zinc-500">Automatically parses and honors provider <code className="text-zinc-300">Retry-After</code> headers on HTTP 429 rate limits up to <code className="text-zinc-300">max_delay</code>.</p>
-                </div>
+              <div className="p-3 rounded-md bg-zinc-950 border border-zinc-800 text-xs text-zinc-400 space-y-1">
+                <strong className="text-white block">Compaction Lifecycle:</strong>
+                <div>• <strong>OpenAI:</strong> Server-side compaction creates an opaque compaction item in the response stream. In <code className="text-zinc-200 font-mono">response_chain</code> mode, passing <code className="text-zinc-200 font-mono">previous_response_id</code> carries this compaction forward seamlessly.</div>
+                <div>• <strong>Anthropic:</strong> Claude produces a native <code className="text-zinc-200 font-mono">compaction</code> block. Evidor preserves this compaction block and formats it into subsequent turns so Claude automatically drops older history.</div>
               </div>
             </section>
 
-            {/* 7. NATIVE ASYNC CONVERSATIONS */}
-            <section id="async-conversations" className="space-y-3 scroll-mt-24">
+            {/* 9. INSPECTING & RESETTING STATE */}
+            <section id="inspecting-state" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Inspecting and Resetting State
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Inspect provider identifiers, strategy, message history, or reset the conversation at any time:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.inspectingState}
+                filename="inspect_state.py"
+                language="python"
+              />
+            </section>
+
+            {/* 10. STATELESS LLM CALLS */}
+            <section id="stateless-calls" className="space-y-3 scroll-mt-24">
+              <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                STATELESS PARADIGM
+              </div>
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Stateless LLM Calls (provider.generate)
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                In the stateless paradigm, you interact directly with the underlying <code className="text-zinc-200 font-mono">ModelProvider</code> using <code className="text-zinc-200 font-mono">GenerationRequest</code>. Evidor executes the call directly against modern provider endpoints without maintaining or mutating any hidden conversation state:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.statelessCalls}
+                filename="stateless_calls.py"
+                language="python"
+              />
+            </section>
+
+            {/* 11. USER-MANAGED HISTORY */}
+            <section id="user-managed-history" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                User-Managed Message History
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                When your application handles its own persistence (e.g. database, chat storage, or custom state machine), you maintain the message list and pass it directly to <code className="text-zinc-200 font-mono">provider.generate()</code>:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.userManagedHistory}
+                filename="user_managed_history.py"
+                language="python"
+              />
+            </section>
+
+            {/* 12. STATELESS TOOLS */}
+            <section id="stateless-tools" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Stateless Tool Calling
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Supply tool definitions directly in a <code className="text-zinc-200 font-mono">GenerationRequest</code>. The model emits tool calls if needed, which you can execute statelessly in your own application loop:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.statelessTools}
+                filename="stateless_tools.py"
+                language="python"
+              />
+            </section>
+
+            {/* 13. THINKING & REASONING MODE */}
+            <section id="thinking-mode" className="space-y-3 scroll-mt-24">
+              <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                REASONING CAPABILITIES
+              </div>
               <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-emerald-400" />
+                <BrainCircuit className="w-5 h-5 text-purple-400" />
+                <h2 className="text-xl font-bold text-white tracking-tight">
+                  Configurable Thinking &amp; Reasoning Mode
+                </h2>
+              </div>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Evidor provides first-class support for reasoning models across <strong>OpenAI</strong> (<code className="text-zinc-200 font-mono">gpt-6-astra</code>, <code className="text-zinc-200 font-mono">gpt-6.1-sol</code>), <strong>Anthropic</strong> (<code className="text-zinc-200 font-mono">claude-3-7-sonnet-20250219</code>), and <strong>Gemini</strong> (<code className="text-zinc-200 font-mono">gemini-3.8-flash</code>). Configure thinking using provider-specific typed configuration classes or intuitive shorthands:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.thinkingConfig}
+                filename="thinking_configs.py"
+                language="python"
+              />
+            </section>
+
+            {/* 14. INSPECTING REASONING */}
+            <section id="thinking-inspection" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Inspecting Reasoning Steps &amp; Tokens
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                When thinking is enabled and the provider outputs thought tokens, the response provides both the visible text and the internal reasoning scratchpad:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.thinkingInspection}
+                filename="inspect_thinking.py"
+                language="python"
+              />
+            </section>
+
+            {/* 15. CRYPTOGRAPHIC SIGNATURES */}
+            <section id="thinking-signatures" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Multi-Turn Tool Calling &amp; Cryptographic Signatures
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Reasoning models from Anthropic and Gemini output thought blocks alongside cryptographic signatures (such as Anthropic&apos;s <code className="text-zinc-200 font-mono">signature</code> field or Gemini&apos;s thought parts). In multi-turn tool loops, these signatures must be preserved and replayed in subsequent conversation turns to avoid API verification errors. Evidor automatically captures and replays them in <code className="text-zinc-200 font-mono">agent.messages</code> and <code className="text-zinc-200 font-mono">thought_blocks</code> without requiring any manual handling.
+              </p>
+            </section>
+
+            {/* 16. NATIVE ASYNC CONVERSATIONS */}
+            <section id="async-conversations" className="space-y-3 scroll-mt-24">
+              <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                ASYNC EXECUTION ENGINE
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-emerald-400" />
                 <h2 className="text-xl font-bold text-white tracking-tight">
                   Native Asynchronous Conversations (send_async)
                 </h2>
               </div>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                In async environments (like FastAPI, Tornado, or asynchronous data pipelines), use <code className="text-zinc-200 font-mono">await agent.send_async(...)</code>. When called, all async tools execute natively on the caller&apos;s event loop without thread transitions, cleanly preserving shared connection pools, locks, and <code className="text-zinc-200 font-mono">contextvars</code>:
+                Evidor is built on an <strong>async-first execution engine</strong>. In async environments (like FastAPI, Starlette, Tornado), use <code className="text-zinc-200 font-mono">await agent.send_async(...)</code>. All async tools execute natively on the caller&apos;s event loop without thread transitions, cleanly preserving shared connection pools, locks, and <code className="text-zinc-200 font-mono">contextvars</code>:
               </p>
 
               <CodeBlock
                 code={CODE_EXAMPLES.asyncAgent}
-                filename="async_conversation.py"
+                filename="async_agent.py"
                 language="python"
               />
             </section>
 
-            {/* 8. INSPECTING AND CLEARING HISTORY */}
-            <section id="history-management" className="space-y-3 scroll-mt-24">
+            {/* 17. CONCURRENT MULTI-TOOL GATHER */}
+            <section id="concurrent-tools" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Inspecting and Clearing History
+                Concurrent Multi-Tool Execution (asyncio.gather)
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                You can inspect the retained conversation history or reset turns at any time:
+                When an LLM emits multiple tool calls in a single turn, Evidor executes them <strong>concurrently via <code className="text-zinc-200 font-mono">asyncio.gather()</code></strong>. This significantly reduces turn latency for complex agent workflows:
               </p>
 
               <CodeBlock
-                code={CODE_EXAMPLES.history}
-                filename="history_methods.py"
+                code={CODE_EXAMPLES.concurrentTools}
+                filename="concurrent_tools.py"
                 language="python"
               />
-
-              <div className="p-3 rounded-md bg-zinc-950 border border-zinc-800 text-xs text-zinc-400">
-                <code className="text-zinc-200 font-mono">agent.clear_history()</code> clears conversation turns while keeping the original system prompt intact.
-              </div>
             </section>
 
-            {/* 9. CONTEXT WINDOW MANAGEMENT */}
-            <section id="context-management" className="space-y-3 scroll-mt-24">
+            {/* 18. EVENT LOOP GUARDS */}
+            <section id="loop-guards" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Context Window Management &amp; Compaction
+                Event Loop Guards &amp; Clean Teardown
               </h2>
-              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                <code className="text-zinc-200 font-mono">Agent</code> automatically manages message history to stay within token and message limits using <code className="text-zinc-200 font-mono">ConversationContext</code>:
-              </p>
-
-              <CodeBlock
-                code={CODE_EXAMPLES.contextManagement}
-                filename="context_config.py"
-                language="python"
-              />
-
-              <div className="space-y-2 pt-2">
-                <h4 className="text-xs font-semibold text-white">Default Parameters:</h4>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs font-mono border border-white/[0.08] rounded-md overflow-hidden">
-                    <thead className="bg-[#09090b] text-zinc-300 border-b border-white/[0.08]">
-                      <tr>
-                        <th className="p-2.5 text-left font-medium">Parameter</th>
-                        <th className="p-2.5 text-left font-medium">Default</th>
-                        <th className="p-2.5 text-left font-medium">Constant</th>
-                        <th className="p-2.5 text-left font-medium">Description</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-800/80 text-zinc-400">
-                      <tr>
-                        <td className="p-2.5 text-white font-medium">context_window</td>
-                        <td className="p-2.5 text-zinc-300">16_000</td>
-                        <td className="p-2.5 text-zinc-400">DEFAULT_CONTEXT_WINDOW</td>
-                        <td className="p-2.5">Max token budget before compaction fires.</td>
-                      </tr>
-                      <tr>
-                        <td className="p-2.5 text-white font-medium">max_messages</td>
-                        <td className="p-2.5 text-zinc-300">50</td>
-                        <td className="p-2.5 text-zinc-400">DEFAULT_MAX_MESSAGES</td>
-                        <td className="p-2.5">Max messages retained before compaction fires.</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-lg bg-[#09090b] border border-white/[0.08] space-y-1.5 text-xs text-zinc-400">
-                <div className="font-semibold text-white">When conversation history exceeds limits:</div>
-                <ul className="list-disc pl-5 space-y-1 text-zinc-400">
-                  <li>Older messages are automatically summarized using the configured model provider.</li>
-                  <li>The summary is injected as a bounded summary message (<code className="text-zinc-200 font-mono">Message(role=&quot;system&quot;, ..., is_summary=True)</code>).</li>
-                  <li>The permanent system prompt and recent conversational turns remain intact.</li>
-                </ul>
+              <div className="space-y-2 text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                <p>
+                  Synchronous methods (<code className="text-zinc-200 font-mono">agent.send()</code>, <code className="text-zinc-200 font-mono">agent.close()</code>, <code className="text-zinc-200 font-mono">tool.execute()</code>, <code className="text-zinc-200 font-mono">mcp.get_tools()</code>) are protected with event loop guards. Calling them from inside an active event loop raises an explicit <code className="text-rose-400 font-mono">RuntimeError</code> immediately rather than hanging the event loop, directing you to use <code className="text-zinc-200 font-mono">await agent.send_async()</code>, <code className="text-zinc-200 font-mono">await agent.close_async()</code>, etc.
+                </p>
+                <p>
+                  Clean up agents and background MCP sessions asynchronously using <code className="text-zinc-200 font-mono">await agent.close_async()</code> or the <code className="text-zinc-200 font-mono">async with agent:</code> context manager.
+                </p>
               </div>
             </section>
 
-            {/* 10. CONFIGURABLE SUMMARIZATION */}
-            <section id="configurable-summarization" className="space-y-3 scroll-mt-24">
-              <h2 className="text-xl font-bold text-white tracking-tight">
-                Configurable Summarization Model
-              </h2>
-              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                By default, the agent uses its primary provider and model for summarization during compaction. You can configure a specific model name string or a separate <code className="text-zinc-200 font-mono">ModelProvider</code> instance (e.g. to use a faster, lighter model for background summaries):
-              </p>
-
-              <CodeBlock
-                code={CODE_EXAMPLES.summarizationModel}
-                filename="summarizer_options.py"
-                language="python"
-              />
-            </section>
-
-            {/* 11. DEFINING TOOLS WITH @tool */}
+            {/* 19. DEFINING TOOLS WITH @TOOL */}
             <section id="tool-definition" className="space-y-3 scroll-mt-24">
               <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
                 TOOLS &amp; FUNCTION CALLING
@@ -585,36 +733,36 @@ pip install "evidor[all]"`}
                 Defining Tools with @tool
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Transform any Python function into a provider-neutral tool using the <code className="text-zinc-200 font-mono">@tool</code> decorator. Evidor automatically derives the JSON Schema for parameters from type annotations and extracts descriptions from docstrings (Google, Sphinx, or plain styles):
+                Transform any Python function into a provider-neutral tool using the <code className="text-zinc-200 font-mono">@tool</code> decorator. Evidor automatically derives the JSON Schema for parameters from type annotations and extracts descriptions from docstrings:
               </p>
 
               <CodeBlock
                 code={CODE_EXAMPLES.toolDefinition}
-                filename="tool_definition.py"
+                filename="define_tools.py"
                 language="python"
               />
             </section>
 
-            {/* 12. EQUIPPING AGENTS WITH TOOLS */}
+            {/* 20. EQUIPPING AGENTS WITH TOOLS */}
             <section id="agent-tools" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-white tracking-tight">
                 Equipping Agents with Tools
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Pass your tools directly into <code className="text-zinc-200 font-mono">Agent(..., tools=[...])</code>. When a model decides to call one or more tools, the agent automatically executes them, feeds the results back to the model as <code className="text-zinc-200 font-mono">role=&quot;tool&quot;</code> messages, and loops until the model generates a final response:
+                Pass your tools directly into <code className="text-zinc-200 font-mono">Agent(..., tools=[...])</code>. The agent automatically executes tool calls, feeds results back as <code className="text-zinc-200 font-mono">role=&quot;tool&quot;</code>, and loops until the model generates a final response:
               </p>
 
               <CodeBlock
                 code={CODE_EXAMPLES.toolsQuickstart}
-                filename="agent_tool_loop.py"
+                filename="agent_tools.py"
                 language="python"
               />
             </section>
 
-            {/* 13. ASYNC TOOLS & EXECUTION TIMEOUTS */}
+            {/* 21. ASYNC TOOLS & TIMEOUTS */}
             <section id="async-tools" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Async Tools &amp; Execution Timeouts
+                Async Tools &amp; Timeouts
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
                 Evidor seamlessly supports asynchronous functions and execution timeouts:
@@ -625,16 +773,12 @@ pip install "evidor[all]"`}
                 filename="async_tools.py"
                 language="python"
               />
-
-              <div className="p-3.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-400">
-                <strong className="text-white">Self-healing recovery:</strong> If a tool times out, raises an error, or if the model emits malformed JSON arguments, Evidor safely captures the error and feeds it back to the model as a <code className="text-zinc-200 font-mono">role=&quot;tool&quot;</code> message so the LLM can self-correct.
-              </div>
             </section>
 
-            {/* 14. MANUAL TOOL DEFINITION */}
+            {/* 22. MANUAL TOOLS */}
             <section id="manual-tools" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Manual Tool Definition (Tool Class)
+                Manual Tool Definition
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
                 For dynamic or programmatic tools without a standard Python function signature, instantiate <code className="text-zinc-200 font-mono">Tool</code> directly:
@@ -647,68 +791,16 @@ pip install "evidor[all]"`}
               />
             </section>
 
-            {/* 15. MODEL CONTEXT PROTOCOL (MCP) */}
-            <section id="mcp-overview" className="space-y-3 scroll-mt-24">
-              <div className="flex items-center gap-2">
-                <Server className="w-4 h-4 text-emerald-400" />
-                <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
-                  MODEL CONTEXT PROTOCOL (MCP)
-                </div>
-              </div>
-              <h2 className="text-xl font-bold text-white tracking-tight">
-                Connecting Agents to MCP Servers
-              </h2>
-              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Evidor includes first-class support for the Model Context Protocol (MCP). Agents can connect to any MCP server (over local <strong className="text-zinc-200 font-mono">stdio</strong>, modern <strong className="text-zinc-200 font-mono">Streamable HTTP</strong>, or legacy <strong className="text-zinc-200 font-mono">SSE</strong>), automatically discover tools, execute them, and feed responses back to the model:
-              </p>
-
-              <CodeBlock
-                code={CODE_EXAMPLES.mcpQuickstart}
-                filename="mcp_stdio_quickstart.py"
-                language="python"
-              />
-            </section>
-
-            <section id="mcp-remote" className="space-y-3 scroll-mt-24">
-              <h2 className="text-xl font-bold text-white tracking-tight">
-                Remote &amp; Hosted MCP Transports (Streamable HTTP &amp; SSE)
-              </h2>
-              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Connect multiple MCP servers simultaneously. In modern MCP specifications, <code className="text-zinc-200 font-mono">streamable-http</code> is the primary standard for HTTP-based communication:
-              </p>
-
-              <CodeBlock
-                code={CODE_EXAMPLES.mcpRemote}
-                filename="mcp_transports.py"
-                language="python"
-              />
-            </section>
-
-            <section id="mcp-shared" className="space-y-3 scroll-mt-24">
-              <h2 className="text-xl font-bold text-white tracking-tight">
-                Shared MCPClient Across Multi-Agent Systems
-              </h2>
-              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                In multi-agent systems and web backends (such as FastAPI), boot a single <code className="text-zinc-200 font-mono">MCPClient</code> instance and share it across multiple agents to eliminate duplicate subprocesses:
-              </p>
-
-              <CodeBlock
-                code={CODE_EXAMPLES.sharedMcp}
-                filename="shared_mcp_client.py"
-                language="python"
-              />
-            </section>
-
-            {/* 16. BUILT-IN TOOLKITS */}
+            {/* 23. BUILT-IN UTILITY TOOLS */}
             <section id="builtin-tools" className="space-y-3 scroll-mt-24">
               <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
                 BUILT-IN TOOLKITS
               </div>
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Built-in Utility Tools (calculator &amp; get_current_time)
+                Built-in Utility Tools (Calculator &amp; Time)
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Evidor includes dependency-free utility tools you can opt into:
+                Evidor includes dependency-free tools you can opt into:
               </p>
 
               <CodeBlock
@@ -718,15 +810,13 @@ pip install "evidor[all]"`}
               />
             </section>
 
+            {/* 24. SCOPED FILESYSTEM TOOLS */}
             <section id="filesystem-tools" className="space-y-3 scroll-mt-24">
-              <div className="flex items-center gap-2">
-                <FolderTree className="w-4 h-4 text-zinc-400" />
-                <h2 className="text-xl font-bold text-white tracking-tight">
-                  Scoped Filesystem Tools
-                </h2>
-              </div>
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Scoped Filesystem Tools
+              </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Create filesystem tools scoped strictly to an existing directory root for safe file inspection and modification:
+                Create filesystem tools scoped to an existing directory for listing, searching, reading, creating, updating, and deleting files with strict boundary checks:
               </p>
 
               <CodeBlock
@@ -734,29 +824,15 @@ pip install "evidor[all]"`}
                 filename="filesystem_tools.py"
                 language="python"
               />
-
-              <div className="p-4 rounded-lg bg-[#09090b] border border-white/[0.08] text-xs space-y-2">
-                <div className="font-semibold text-white">filesystem_tools returns six scoped tools:</div>
-                <ul className="list-disc pl-5 space-y-1 text-zinc-400">
-                  <li><strong className="text-zinc-200 font-mono">list_files</strong>: Lists files in the root or a subdirectory.</li>
-                  <li><strong className="text-zinc-200 font-mono">read_file</strong>: Reads a UTF-8 text file.</li>
-                  <li><strong className="text-zinc-200 font-mono">search_files</strong>: Searches UTF-8 text files for a literal string.</li>
-                  <li><strong className="text-zinc-200 font-mono">create_file</strong>: Creates a new UTF-8 text file.</li>
-                  <li><strong className="text-zinc-200 font-mono">write_file</strong>: Replaces the contents of an existing UTF-8 text file.</li>
-                  <li><strong className="text-zinc-200 font-mono">delete_file</strong>: Deletes an existing file.</li>
-                </ul>
-              </div>
             </section>
 
+            {/* 25. PROVIDER-NEUTRAL WEB SEARCH */}
             <section id="web-search" className="space-y-3 scroll-mt-24">
-              <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-zinc-400" />
-                <h2 className="text-xl font-bold text-white tracking-tight">
-                  Provider-Neutral Web Search
-                </h2>
-              </div>
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Provider-Neutral Web Search
+              </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Use <code className="text-zinc-200 font-mono">web_search()</code> with Tavily, Exa, or Brave adapters built entirely on Python&apos;s standard library:
+                Pluggable search using Tavily, Exa, or Brave adapters built exclusively with Python standard library:
               </p>
 
               <CodeBlock
@@ -766,263 +842,299 @@ pip install "evidor[all]"`}
               />
             </section>
 
-            {/* 17. TELEMETRY & OBSERVABILITY */}
-            <section id="telemetry-overview" className="space-y-3 scroll-mt-24">
-              <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-emerald-400" />
-                <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
-                  TELEMETRY &amp; OBSERVABILITY
-                </div>
-              </div>
+            {/* 26. WEBPAGE READER */}
+            <section id="webpage-reader" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Decoupled Telemetry Actor Runtime
+                Webpage Reader (read_webpage)
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Evidor includes an asynchronous actor-like producer-consumer telemetry runtime. Event emission on the agent thread takes under <strong>1 microsecond</strong> via an in-memory bounded queue, while batching, formatting, and network dispatch occur on a dedicated background worker thread (<code className="text-zinc-300 font-mono">Evidor-Telemetry-Worker</code>). Built-in sinks (<code className="text-zinc-200 font-mono">ConsoleSink</code>, <code className="text-zinc-200 font-mono">InMemorySink</code>) require zero external dependencies:
+                Let agents fetch and read clean, token-bounded text from web pages, stripping HTML boilerplate automatically:
               </p>
 
               <CodeBlock
-                code={`from evidor import Agent, OpenAIProvider
-from evidor.telemetry import ConsoleSink, InMemorySink
-
-# Built-in zero-dependency real-time stream
-sink = ConsoleSink()
-agent = Agent(OpenAIProvider("gpt-4.1-mini"), telemetry=sink)
-agent.send("Hello world")
-agent.close()`}
+                code={CODE_EXAMPLES.webpageReader}
+                filename="read_webpage.py"
                 language="python"
-                filename="builtin_telemetry.py"
               />
             </section>
 
-            <section id="telemetry-adapters" className="space-y-3 scroll-mt-24">
+            {/* 27. STRUCTURED EVIDENCE STORE */}
+            <section id="evidence-store" className="space-y-3 scroll-mt-24">
+              <div className="flex items-center gap-2">
+                <Boxes className="w-4 h-4 text-amber-400" />
+                <h2 className="text-xl font-bold text-white tracking-tight">
+                  Structured Evidence Store (EvidenceStore)
+                </h2>
+              </div>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Prevent context pollution and hallucinations across multi-step research or analysis tasks by equipping agents with an in-memory structured evidence store:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.evidenceStore}
+                filename="evidence_store.py"
+                language="python"
+              />
+            </section>
+
+            {/* 28. MCP OVERVIEW & STDIO */}
+            <section id="mcp-overview" className="space-y-3 scroll-mt-24">
+              <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                MODEL CONTEXT PROTOCOL (MCP)
+              </div>
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Observability Adapters: OpenTelemetry, Langfuse, Phoenix &amp; Prometheus
+                MCP Overview &amp; Local Stdio Servers
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Plug into industry-standard observability backends with isolated package extras:
+                Connect agents to external MCP servers (e.g. AWS Bedrock, Amazon search) over local stdio subprocesses:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.mcpQuickstart}
+                filename="mcp_quickstart.py"
+                language="python"
+              />
+            </section>
+
+            {/* 29. REMOTE MCP TRANSPORTS */}
+            <section id="mcp-remote" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Streamable HTTP &amp; SSE Remote MCP Transports
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Connect to remote hosted MCP servers using modern Streamable HTTP (<code className="text-zinc-200 font-mono">streamable-http</code> or <code className="text-zinc-200 font-mono">http</code>) or legacy SSE:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.mcpRemote}
+                filename="mcp_remote.py"
+                language="python"
+              />
+            </section>
+
+            {/* 30. SHARED MCPCLIENT */}
+            <section id="mcp-shared" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Shared MCPClient Across Agents
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                In FastAPI or multi-agent backends, share a single open <code className="text-zinc-200 font-mono">MCPClient</code> across agents to avoid spawning duplicate server subprocesses:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.sharedMcp}
+                filename="shared_mcp.py"
+                language="python"
+              />
+            </section>
+
+            {/* 31. STANDALONE MCPCLIENT */}
+            <section id="mcp-standalone" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Standalone MCPClient &amp; Tool Composition
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Use <code className="text-zinc-200 font-mono">MCPClient</code> standalone to inspect tools, retrieve resources, or mix MCP tools with standard Python tools:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.standaloneMcp}
+                filename="standalone_mcp.py"
+                language="python"
+              />
+            </section>
+
+            {/* 32. TELEMETRY ACTOR RUNTIME */}
+            <section id="telemetry-overview" className="space-y-3 scroll-mt-24">
+              <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                TELEMETRY &amp; OBSERVABILITY
+              </div>
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Decoupled Actor Runtime &amp; Built-in Sinks
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Built on an asynchronous producer-consumer actor runtime. Event dispatch on the agent thread takes under 1 microsecond. Network transport and formatting run on a dedicated worker thread (<code className="text-zinc-200 font-mono">Evidor-Telemetry-Worker</code>). Built-in sinks require zero extra dependencies:
               </p>
 
               <CodeBlock
                 code={CODE_EXAMPLES.telemetryOtel}
-                filename="opentelemetry_tracing.py"
+                filename="telemetry_setup.py"
                 language="python"
               />
-
-              <div className="pt-2">
-                <h4 className="text-xs font-semibold text-white mb-2">Langfuse Integration:</h4>
-                <CodeBlock
-                  code={CODE_EXAMPLES.telemetryLangfuse}
-                  filename="langfuse_tracing.py"
-                  language="python"
-                />
-              </div>
             </section>
 
-            <section id="telemetry-privacy" className="space-y-3 scroll-mt-24">
-              <div className="flex items-center gap-2">
-                <EyeOff className="w-4 h-4 text-amber-400" />
-                <h2 className="text-xl font-bold text-white tracking-tight">
-                  Privacy &amp; PII Protection (Metadata-Only Mode)
-                </h2>
-              </div>
+            {/* 33. OBSERVABILITY ADAPTERS */}
+            <section id="telemetry-adapters" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Observability Adapters (OTel, Langfuse, Phoenix, Prometheus)
+              </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                In regulated environments (healthcare, finance, customer records), set <code className="text-zinc-200 font-mono">capture_content=False</code>. Sinks preserve span hierarchies, latencies, retry metrics, and token counts, while redacting raw prompt text, LLM outputs, and tool arguments:
+                Official ultra-compact adapters for industry-leading observability platforms:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.telemetryLangfuse}
+                filename="langfuse_setup.py"
+                language="python"
+              />
+            </section>
+
+            {/* 34. THINKING VISIBILITY */}
+            <section id="telemetry-thinking" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Thinking Visibility in Telemetry (capture_thinking)
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Intermediate reasoning scratchpads can contain confidential information. Sinks default to <code className="text-zinc-200 font-mono">capture_thinking=False</code>, which redacts raw thought text while recording reasoning token metrics. Enable <code className="text-zinc-200 font-mono">capture_thinking=True</code> to make reasoning steps visible in trace dashboards:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.telemetryThinking}
+                filename="capture_thinking.py"
+                language="python"
+              />
+            </section>
+
+            {/* 35. PRIVACY & PII PROTECTION */}
+            <section id="telemetry-privacy" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Privacy &amp; PII Protection (capture_content=False)
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Setting <code className="text-zinc-200 font-mono">capture_content=False</code> redacts all raw prompt text, model outputs, and tool arguments while preserving span trees, latencies, and token counts:
               </p>
 
               <CodeBlock
                 code={CODE_EXAMPLES.telemetryPrivacy}
-                filename="pii_redacted_telemetry.py"
+                filename="pii_protection.py"
                 language="python"
               />
             </section>
 
-            {/* 18. LOW-LEVEL GENERATION */}
-            <section id="low-level-generation" className="space-y-3 scroll-mt-24">
-              <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
-                LOW-LEVEL API &amp; PROVIDERS
-              </div>
-              <h2 className="text-xl font-bold text-white tracking-tight">
-                Low-level Generation with GenerationRequest
-              </h2>
-              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                For direct provider calls without stateful session management, instantiate messages and requests directly:
-              </p>
-
-              <CodeBlock
-                code={CODE_EXAMPLES.lowLevel}
-                filename="low_level_generation.py"
-                language="python"
-              />
-            </section>
-
-            {/* 19. SUPPORTED PROVIDERS */}
+            {/* 36. SUPPORTED PROVIDERS */}
             <section id="supported-providers" className="space-y-3 scroll-mt-24">
+              <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                PROVIDERS &amp; LOW-LEVEL API
+              </div>
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Supported Providers &amp; Credentials
+                Supported Providers &amp; Modern APIs
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Supported providers and their typical models:
+                Evidor exclusively uses modern provider APIs with zero legacy fallbacks:
               </p>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs font-mono border border-white/[0.08] rounded-md overflow-hidden">
-                  <thead className="bg-[#09090b] text-zinc-300 border-b border-white/[0.08]">
-                    <tr>
-                      <th className="p-2.5 text-left font-medium">Provider</th>
-                      <th className="p-2.5 text-left font-medium">Example Model</th>
-                      <th className="p-2.5 text-left font-medium">Environment Variable</th>
-                      <th className="p-2.5 text-left font-medium">Extra Install</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-zinc-800/80 text-zinc-400">
-                    <tr>
-                      <td className="p-2.5 text-white font-medium">OpenAIProvider</td>
-                      <td className="p-2.5 text-zinc-300">gpt-4.1-mini</td>
-                      <td className="p-2.5 text-zinc-300">OPENAI_API_KEY</td>
-                      <td className="p-2.5">evidor[openai]</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2.5 text-white font-medium">AnthropicProvider</td>
-                      <td className="p-2.5 text-zinc-300">claude-3-5-sonnet-20241022</td>
-                      <td className="p-2.5 text-zinc-300">ANTHROPIC_API_KEY</td>
-                      <td className="p-2.5">evidor[anthropic]</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2.5 text-white font-medium">GeminiProvider</td>
-                      <td className="p-2.5 text-zinc-300">gemini-2.5-flash</td>
-                      <td className="p-2.5 text-zinc-300">GEMINI_API_KEY</td>
-                      <td className="p-2.5">evidor[gemini]</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="space-y-2 text-xs text-zinc-400">
+                <div>• <strong>OpenAI (OpenAIProvider):</strong> Exclusively uses OpenAI Responses API (<code className="text-zinc-200 font-mono">client.responses.create</code>) with <code className="text-zinc-200 font-mono">previous_response_id</code> chaining. Requires <code className="text-zinc-200 font-mono">openai&gt;=1.0.0</code>.</div>
+                <div>• <strong>Gemini (GeminiProvider):</strong> Exclusively uses Google Interactions API (<code className="text-zinc-200 font-mono">client.interactions.create</code>) with <code className="text-zinc-200 font-mono">previous_interaction_id</code> chaining. Requires <code className="text-zinc-200 font-mono">google-genai&gt;=1.0.0</code>.</div>
+                <div>• <strong>Anthropic (AnthropicProvider):</strong> Messages API with native ephemeral prompt caching (<code className="text-zinc-200 font-mono">cache_control</code>) and native threshold compaction.</div>
               </div>
             </section>
 
-            {/* 20. CUSTOM PROVIDERS */}
+            {/* 37. CUSTOM PROVIDERS */}
             <section id="custom-providers" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Custom Providers (ModelProvider Protocol)
+                Custom ModelProvider Protocol
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                <code className="text-zinc-200 font-mono">Agent</code> depends only on the <code className="text-zinc-200 font-mono">ModelProvider</code> protocol. To support another LLM or backend, implement the <code className="text-zinc-200 font-mono">generate(request)</code> and <code className="text-zinc-200 font-mono">with_model(model)</code> methods:
+                Implement either synchronous <code className="text-zinc-200 font-mono">generate(request)</code>, native asynchronous <code className="text-zinc-200 font-mono">generate_async(request)</code>, or both:
               </p>
 
               <CodeBlock
                 code={CODE_EXAMPLES.customProvider}
-                filename="custom_provider.py"
+                filename="custom_async_provider.py"
                 language="python"
               />
             </section>
 
-            {/* 21. OPTIONAL EXTRAS SUMMARY */}
+            {/* 38. OPTIONAL EXTRAS */}
             <section id="optional-extras" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-white tracking-tight">
                 Optional Package Extras Summary
               </h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs font-mono border border-white/[0.08] rounded-md overflow-hidden">
-                  <thead className="bg-[#09090b] text-zinc-300 border-b border-white/[0.08]">
+              <div className="overflow-x-auto text-xs font-mono">
+                <table className="w-full border border-zinc-800 text-left">
+                  <thead className="bg-zinc-900 text-zinc-300">
                     <tr>
-                      <th className="p-2.5 text-left font-medium">Extra</th>
-                      <th className="p-2.5 text-left font-medium">Purpose</th>
-                      <th className="p-2.5 text-left font-medium">Included Packages</th>
+                      <th className="p-2.5 border-b border-zinc-800">Extra</th>
+                      <th className="p-2.5 border-b border-zinc-800">Purpose</th>
+                      <th className="p-2.5 border-b border-zinc-800">Included Packages</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/80 text-zinc-400">
+                  <tbody className="divide-y divide-zinc-900 text-zinc-400">
                     <tr>
-                      <td className="p-2.5 text-white font-medium">evidor[openai]</td>
-                      <td className="p-2.5">OpenAI models</td>
-                      <td className="p-2.5 text-zinc-300">openai</td>
+                      <td className="p-2.5 font-semibold text-white">evidor[openai]</td>
+                      <td className="p-2.5">OpenAI models (gpt-6-astra, gpt-4.1-mini)</td>
+                      <td className="p-2.5">openai</td>
                     </tr>
                     <tr>
-                      <td className="p-2.5 text-white font-medium">evidor[anthropic]</td>
-                      <td className="p-2.5">Anthropic Claude models</td>
-                      <td className="p-2.5 text-zinc-300">anthropic</td>
+                      <td className="p-2.5 font-semibold text-white">evidor[anthropic]</td>
+                      <td className="p-2.5">Anthropic Claude (claude-3-7-sonnet)</td>
+                      <td className="p-2.5">anthropic</td>
                     </tr>
                     <tr>
-                      <td className="p-2.5 text-white font-medium">evidor[gemini]</td>
-                      <td className="p-2.5">Google Gemini models</td>
-                      <td className="p-2.5 text-zinc-300">google-genai</td>
+                      <td className="p-2.5 font-semibold text-white">evidor[gemini]</td>
+                      <td className="p-2.5">Google Gemini (gemini-3.8-flash)</td>
+                      <td className="p-2.5">google-genai</td>
                     </tr>
                     <tr>
-                      <td className="p-2.5 text-white font-medium">evidor[mcp]</td>
+                      <td className="p-2.5 font-semibold text-white">evidor[mcp]</td>
                       <td className="p-2.5">Model Context Protocol servers</td>
-                      <td className="p-2.5 text-zinc-300">mcp</td>
+                      <td className="p-2.5">mcp</td>
                     </tr>
                     <tr>
-                      <td className="p-2.5 text-white font-medium">evidor[otel]</td>
+                      <td className="p-2.5 font-semibold text-white">evidor[otel]</td>
                       <td className="p-2.5">OpenTelemetry distributed tracing</td>
-                      <td className="p-2.5 text-zinc-300">opentelemetry-api, opentelemetry-sdk</td>
+                      <td className="p-2.5">opentelemetry-api, opentelemetry-sdk</td>
                     </tr>
                     <tr>
-                      <td className="p-2.5 text-white font-medium">evidor[langfuse]</td>
+                      <td className="p-2.5 font-semibold text-white">evidor[langfuse]</td>
                       <td className="p-2.5">Langfuse tracing &amp; evaluation</td>
-                      <td className="p-2.5 text-zinc-300">langfuse</td>
+                      <td className="p-2.5">langfuse</td>
                     </tr>
                     <tr>
-                      <td className="p-2.5 text-white font-medium">evidor[phoenix]</td>
-                      <td className="p-2.5">Arize Phoenix with OpenInference UI</td>
-                      <td className="p-2.5 text-zinc-300">arize-phoenix-otel, openinference-semantic-conventions</td>
+                      <td className="p-2.5 font-semibold text-white">evidor[phoenix]</td>
+                      <td className="p-2.5">Arize Phoenix OpenInference UI</td>
+                      <td className="p-2.5">arize-phoenix-otel, openinference-semantic-conventions</td>
                     </tr>
                     <tr>
-                      <td className="p-2.5 text-white font-medium">evidor[prometheus]</td>
+                      <td className="p-2.5 font-semibold text-white">evidor[prometheus]</td>
                       <td className="p-2.5">Prometheus metrics exposition</td>
-                      <td className="p-2.5 text-zinc-300">prometheus-client</td>
+                      <td className="p-2.5">prometheus-client</td>
                     </tr>
                     <tr>
-                      <td className="p-2.5 text-white font-medium">evidor[all]</td>
-                      <td className="p-2.5">All providers, MCP &amp; telemetry</td>
-                      <td className="p-2.5 text-zinc-300">All optional dependencies</td>
+                      <td className="p-2.5 font-semibold text-white">evidor[all]</td>
+                      <td className="p-2.5">All providers, MCP, and telemetry adapters</td>
+                      <td className="p-2.5">All optional extras</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </section>
 
-            {/* 22. RELEASE MODEL */}
+            {/* 39. RELEASE MODEL */}
             <section id="release-model" className="space-y-3 scroll-mt-24">
               <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
-                RELEASE &amp; DEVELOPMENT
+                RELEASE &amp; BUILD
               </div>
-              <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                <GitBranch className="w-4 h-4 text-zinc-400" />
-                <span>PyPI Release Model &amp; Conventional Commits</span>
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                PyPI Release Model
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Releases are performed by GitHub Actions and use Conventional Commits to select the next semantic version:
+                Releases are automated via GitHub Actions and use Conventional Commits to calculate the next semantic version:
               </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                <div className="p-3.5 rounded-lg bg-zinc-950 border border-white/[0.08] space-y-1">
-                  <div className="flex items-center gap-2 font-mono text-zinc-300 font-medium">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    <span>main Branch → PyPI Stable</span>
-                  </div>
-                  <p className="text-zinc-500 leading-relaxed">
-                    Pushes and releases merged to <code className="text-zinc-300">main</code> publish stable production versions directly to PyPI via trusted publishing.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-lg bg-zinc-950 border border-white/[0.08] space-y-1">
-                  <div className="flex items-center gap-2 font-mono text-zinc-300 font-medium">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                    <span>dev Branch → TestPyPI</span>
-                  </div>
-                  <p className="text-zinc-500 leading-relaxed">
-                    Pushes to <code className="text-zinc-300">dev</code> publish <code className="text-zinc-300 font-mono">-dev.N</code> prereleases to TestPyPI for CI verification.
-                  </p>
-                </div>
+              <div className="p-3 rounded-md bg-zinc-950 border border-zinc-800 text-xs font-mono space-y-1 text-zinc-400">
+                <div><code className="text-emerald-400">fix: ...</code> creates a patch release</div>
+                <div><code className="text-emerald-400">feat: ...</code> creates a minor release</div>
+                <div><code className="text-rose-400">BREAKING CHANGE: ...</code> creates a major release</div>
               </div>
             </section>
 
-            {/* 23. LOCAL BUILD & TEST */}
+            {/* 40. LOCAL BUILD */}
             <section id="local-build" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Build &amp; Release Commands
+                Local Build &amp; Testing
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Create distributable artifacts locally:
+                Build and test the package locally:
               </p>
 
               <CodeBlock
@@ -1034,38 +1146,6 @@ python -m twine check dist/*`}
                 filename="terminal"
               />
             </section>
-
-            {/* Return link */}
-            <div className="pt-8 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <Link
-                href="/"
-                className="text-zinc-400 hover:text-white transition-colors"
-              >
-                ← Return to Landing Page
-              </Link>
-              <div className="flex items-center gap-2">
-                <a
-                  href={effectivePypiUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white transition-colors font-mono"
-                >
-                  <Terminal className="w-3.5 h-3.5 text-zinc-400" />
-                  <span>PyPI Package</span>
-                  <ArrowUpRight className="w-3 h-3 text-zinc-500" />
-                </a>
-                <a
-                  href={SITE_CONFIG.githubCoreUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white transition-colors"
-                >
-                  <GithubIcon className="w-3.5 h-3.5" />
-                  <span>GitHub</span>
-                  <ArrowUpRight className="w-3 h-3 text-zinc-500" />
-                </a>
-              </div>
-            </div>
           </main>
         </div>
       </div>

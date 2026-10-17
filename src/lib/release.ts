@@ -35,15 +35,131 @@ export interface DynamicReleaseInfo {
   fetchedAt: string;
 }
 
-// Fallback data reflecting the published PyPI package (v1.4.0)
+// Fallback data reflecting the published PyPI package (v1.8.0)
 export const FALLBACK_RELEASE_INFO: DynamicReleaseInfo = {
-  version: '1.4.0',
-  publishedDate: '2026-10-10',
+  version: '1.8.0',
+  publishedDate: '2026-10-17',
   pypiUrl: 'https://pypi.org/project/evidor/',
   testPypiUrl: 'https://pypi.org/project/evidor/',
   fetchedAt: new Date().toISOString(),
   source: 'fallback',
   changelog: [
+    {
+      version: 'v1.8.0',
+      date: '2026-10-17',
+      sections: [
+        {
+          category: 'Features',
+          items: [
+            {
+              text: 'Async-first execution engine: native send_async, provider generate_async, and async tools without thread hops',
+              commitHash: '85e9800',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/85e9800b591312bf2a36023a7c2b0ac4364d2ca6',
+            },
+            {
+              text: 'Concurrent multi-tool execution via asyncio.gather() when model emits multiple calls in a single turn',
+              commitHash: 'cb3e4e1',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/cb3e4e1a0a396b75715962b85e47434ba76d2f01',
+            },
+            {
+              text: 'Event loop guards: synchronous calls in active event loops raise explicit RuntimeError immediately',
+              commitHash: '9ebac60',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/9ebac601717a12e08395ab67fd17490809c93b16',
+            },
+            {
+              text: 'Two execution paradigms: stateful conversations (Agent) and direct stateless calls (provider.generate)',
+              commitHash: 'ea58896',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/ea58896',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      version: 'v1.7.1',
+      date: '2026-10-16',
+      sections: [
+        {
+          category: 'Bug Fixes',
+          items: [
+            {
+              text: 'Enable native provider context compaction for OpenAI and Anthropic Claude via compact_threshold',
+              commitHash: 'f09c398',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/f09c398c0294ff97aebf5a93416a7d95b9251136',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      version: 'v1.7.0',
+      date: '2026-10-16',
+      sections: [
+        {
+          category: 'Features',
+          items: [
+            {
+              text: 'Update agent providers to modern SDKs: OpenAI Responses API and Google Gemini Interactions API',
+              commitHash: '167a886',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/167a88638a998cd13c4281a5c76b1f5349268d9d',
+            },
+            {
+              text: 'Server-side context chaining: previous_response_id for OpenAI and previous_interaction_id for Gemini',
+              commitHash: 'c39dfbb',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/c39dfbb6cebe3bef3f7cc6f75681aa34a70df368',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      version: 'v1.6.3',
+      date: '2026-10-15',
+      sections: [
+        {
+          category: 'Bug Fixes',
+          items: [
+            {
+              text: 'Cryptographic thought signature persistence and replaying for Anthropic and Gemini multi-turn reasoning',
+              commitHash: 'd8886c2',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/d8886c22fd0f36e72d889e39dc86dd1fd1360dc2',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      version: 'v1.6.0',
+      date: '2026-10-13',
+      sections: [
+        {
+          category: 'Features',
+          items: [
+            {
+              text: 'Ephemeral prompt caching (cache_control={"type": "ephemeral"}) with telemetry tracking for Anthropic Claude',
+              commitHash: '172ff90',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/172ff90b198b56e5e908e316f0b4dc13e1313c97',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      version: 'v1.5.0',
+      date: '2026-10-12',
+      sections: [
+        {
+          category: 'Features',
+          items: [
+            {
+              text: 'Added read_webpage HTML cleaning tool and in-memory EvidenceStore for research agents',
+              commitHash: '37b2c31',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/37b2c314ad5bbd132c69c9795c1e9f117be5aff9',
+            },
+          ],
+        },
+      ],
+    },
     {
       version: 'v1.4.0',
       date: '2026-10-10',
@@ -52,19 +168,9 @@ export const FALLBACK_RELEASE_INFO: DynamicReleaseInfo = {
           category: 'Features',
           items: [
             {
-              text: 'Configurable agent LLM retries with exponential backoff, jitter, and Retry-After support',
-              commitHash: '2ed8f12',
-              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/2ed8f12ee8ff8e9c44f58501a898b05c656e7325',
-            },
-            {
-              text: 'Decoupled telemetry & observability actor runtime (<1µs latency on agent thread)',
+              text: 'Decoupled telemetry actor runtime (<1µs overhead) with OpenTelemetry, Langfuse, Phoenix, and Prometheus adapters',
               commitHash: '124deb0',
               commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/124deb0531985b1a2a781c395db5db177bd38e33',
-            },
-            {
-              text: 'Observability adapters for OpenTelemetry, Langfuse, Arize Phoenix, and Prometheus',
-              commitHash: '188fa50',
-              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/188fa50ec176e96e30708f51149e87adf9a79e25',
             },
             {
               text: 'Privacy and PII protection mode with sink-level capture_content=False',
@@ -75,21 +181,6 @@ export const FALLBACK_RELEASE_INFO: DynamicReleaseInfo = {
               text: 'Python 3.14 official support',
               commitHash: '83cfe8e',
               commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/83cfe8e158a564bd950266b7f265f5d0ba0f55fe',
-            },
-          ],
-        },
-        {
-          category: 'Bug Fixes',
-          items: [
-            {
-              text: 'Harden LLM retry policies, async backoff, and telemetry coordination',
-              commitHash: 'c93a8ef',
-              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/c93a8efd766446a2fce8e90a9a13be1c791ccb26',
-            },
-            {
-              text: 'Guarantee telemetry queue draining on shutdown and in-flight flush synchronization',
-              commitHash: '6d20487',
-              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/6d204878a24ac8f52652b4dd077c071d6154f9a8',
             },
           ],
         },

@@ -1,19 +1,16 @@
 export const SITE_CONFIG = {
   name: 'Evidor',
-  version: '1.4.0',
+  version: '1.8.0',
   status: 'Published on PyPI',
   positioning: 'Provider-agnostic runtime for building AI agents.',
   tagline: 'An open-source, provider-agnostic runtime for building AI agents.',
-  subtagline: 'One interface. Multiple providers. Context compaction, MCP servers, retries, and telemetry built in.',
+  subtagline: 'Stateful & stateless paradigms. Native provider context compaction, thinking flags, async-first concurrent tools, MCP, and <1µs telemetry.',
   githubCoreUrl: 'https://github.com/vedangiitb/evidor-core',
   githubLandingUrl: 'https://github.com/vedangiitb/evidorlabs',
   pypiUrl: 'https://pypi.org/project/evidor/',
   license: 'MIT',
   author: 'Vedang Bale',
-  defaultContextWindow: 16000,
-  defaultMaxMessages: 50,
   defaultMaxToolIterations: 10,
-  defaultMaxRetries: 3,
 };
 
 export const CODE_EXAMPLES = {
@@ -23,21 +20,207 @@ agent = Agent(OpenAIProvider(model="gpt-4.1-mini"))
 response = agent.send("Give a one-sentence explanation of dependency inversion.")
 print(response.text)`,
 
-  toolsQuickstart: `from evidor import Agent, GeminiProvider, tool
+  statefulMultiTurn: `from evidor import Agent, OpenAIProvider
 
-@tool
-def search_database(query: str) -> list[str]:
-    """Search internal records by keyword."""
-    return [f"Record 1 matching '{query}'", f"Record 2 matching '{query}'"]
+# Stateful conversations maintain context across turns automatically
+agent = Agent(OpenAIProvider(model="gpt-6-astra"))
+
+agent.send("My favorite color is navy blue.")
+response = agent.send("What color did I say I like?")
+print(response.text)  # "You said your favorite color is navy blue."`,
+
+  systemPrompt: `from evidor import Agent, GeminiProvider
 
 agent = Agent(
-    GeminiProvider(model="gemini-2.5-flash"),
-    tools=[search_database],
-    max_tool_iterations=10,  # Maximum tool execution turns per send() (default: 10)
+    GeminiProvider(model="gemini-3.8-flash"),
+    system_prompt="You are a concise technical writer. Avoid buzzwords and respond in bullet points.",
 )
 
-response = agent.send("Can you check our records for 'alpha project'?")
+response = agent.send("How does a TCP handshake work?")
 print(response.text)`,
+
+  nativeCompaction: `from evidor import Agent, OpenAIProvider, AnthropicProvider
+
+# 1. OpenAI: Automatic server-side compaction
+openai_agent = Agent(
+    OpenAIProvider(model="gpt-6-astra", compact_threshold=100000)
+)
+
+# 2. Anthropic Claude: Threshold compaction with optional custom instructions
+claude_agent = Agent(
+    AnthropicProvider(
+        model="claude-3-7-sonnet-20250219",
+        compact_threshold=150000,
+        compact_instructions="Focus on preserving key architecture decisions and code snippets.",
+    )
+)
+
+# Compaction threshold can also be set directly on the Agent facade
+agent = Agent(OpenAIProvider(model="gpt-6-astra"), compact_threshold=100000)`,
+
+  inspectingState: `from evidor import Agent, OpenAIProvider
+
+agent = Agent(OpenAIProvider(model="gpt-6-astra"))
+agent.send("Hello!")
+
+# Inspect provider context strategy ('response_chain', 'interaction_chain', 'stateless_replay')
+print(agent.strategy)  # "response_chain"
+
+# Inspect the latest provider response/interaction ID
+print(agent.last_response_id)  # e.g. "resp_12345"
+
+# Inspect message history captured during this session
+for msg in agent.messages:
+    print(f"{msg.role}: {msg.content}")
+
+# Reset conversation state and provider response chain
+agent.reset()  # or agent.clear_history()
+print(agent.last_response_id)  # None`,
+
+  statelessCalls: `from evidor import GenerationRequest, Message, OpenAIProvider
+
+provider = OpenAIProvider(model="gpt-6-astra")
+
+# Single-prompt shortcut
+response = provider.generate(GenerationRequest(prompt="Explain Raft consensus in one paragraph."))
+print(response.text)
+
+# Multi-message request
+request = GenerationRequest(
+    messages=[
+        Message(role="system", content="You are a distributed systems expert."),
+        Message(role="user", content="What is quorum?"),
+    ]
+)
+response = provider.generate(request)
+print(response.text)`,
+
+  userManagedHistory: `from evidor import GenerationRequest, Message, OpenAIProvider
+
+# In stateless mode, the user maintains history and passes it explicitly
+provider = OpenAIProvider(model="gpt-6-astra")
+chat_history: list[Message] = [
+    Message(role="system", content="You are a concise coding assistant."),
+]
+
+# Turn 1
+chat_history.append(Message(role="user", content="Recommend a fast key-value store in Go."))
+response = provider.generate(GenerationRequest(messages=chat_history))
+chat_history.append(Message(role="assistant", content=response.text))
+
+# Turn 2
+chat_history.append(Message(role="user", content="Does it support persistence?"))
+response = provider.generate(GenerationRequest(messages=chat_history))
+chat_history.append(Message(role="assistant", content=response.text))
+print(f"Assistant: {response.text}")`,
+
+  statelessTools: `from evidor import GenerationRequest, Message, OpenAIProvider, Tool
+
+tool_def = Tool(
+    name="get_stock_price",
+    description="Get current price for a stock ticker.",
+    parameters={
+        "type": "object",
+        "properties": {"ticker": {"type": "string"}},
+        "required": ["ticker"],
+    },
+    func=lambda ticker: f"\${ticker.upper()} is $150.00",
+)
+
+request = GenerationRequest(
+    messages=[Message(role="user", content="What is the price of AAPL?")],
+    tools=(tool_def,),
+)
+response = provider.generate(request)
+
+if response.tool_calls:
+    for call in response.tool_calls:
+        print(f"Tool call requested: {call.name} with args {call.arguments}")`,
+
+  thinkingConfig: `from evidor import (
+    Agent,
+    AnthropicProvider,
+    AnthropicThinkingConfig,
+    GeminiProvider,
+    GeminiThinkingConfig,
+    OpenAIProvider,
+    OpenAIThinkingConfig,
+)
+
+# 1. OpenAI: Reasoning effort ('low', 'medium', 'high', 'xhigh', 'max')
+provider = OpenAIProvider(model="gpt-6-astra", thinking="high")
+# Or via typed config:
+provider = OpenAIProvider(model="gpt-6-astra", thinking=OpenAIThinkingConfig(effort="high"))
+
+# 2. Anthropic: Token budget or adaptive effort
+# Shorthand int (budget_tokens >= 1024; auto-bumps max_tokens if needed):
+provider = AnthropicProvider(model="claude-3-7-sonnet-20250219", thinking=4096)
+# Or via typed config:
+provider = AnthropicProvider(
+    model="claude-3-7-sonnet-20250219",
+    thinking=AnthropicThinkingConfig(budget_tokens=4096),
+)
+
+# 3. Gemini: Thinking level ('minimal', 'low', 'medium', 'high') or budget
+provider = GeminiProvider(model="gemini-3.8-flash", thinking="high")
+# Or via typed config:
+provider = GeminiProvider(
+    model="gemini-3.8-flash",
+    thinking=GeminiThinkingConfig(thinking_level="high", include_thoughts=True),
+)`,
+
+  thinkingInspection: `from evidor import Agent, AnthropicProvider
+
+agent = Agent(AnthropicProvider(model="claude-3-7-sonnet-20250219", thinking=2048))
+response = agent.send("Solve this logic riddle step-by-step...")
+
+# Visible text response
+print(response.text)
+
+# Model's internal reasoning scratchpad (if available)
+if response.thinking:
+    print(f"Reasoning Steps:\\n{response.thinking}")
+
+# Reasoning tokens recorded in usage metadata
+if response.usage and response.usage.reasoning_tokens:
+    print(f"Reasoning tokens consumed: {response.usage.reasoning_tokens}")`,
+
+  asyncAgent: `import asyncio
+from evidor import Agent, OpenAIProvider, tool
+
+@tool
+async def lookup_account(account_id: str) -> dict:
+    return {"id": account_id, "status": "active"}
+
+async def main() -> None:
+    # Async-first execution engine: runs natively on caller event loop
+    async with Agent(OpenAIProvider(model="gpt-4.1-mini"), tools=[lookup_account]) as agent:
+        response = await agent.send_async("Check status for account 1234")
+        print(response.text)
+
+asyncio.run(main())`,
+
+  concurrentTools: `import asyncio
+from evidor import Agent, OpenAIProvider, tool
+
+@tool
+async def fetch_user(user_id: str) -> dict:
+    await asyncio.sleep(0.1)
+    return {"id": user_id, "name": "Alice"}
+
+@tool
+async def fetch_orders(user_id: str) -> list[str]:
+    await asyncio.sleep(0.1)
+    return ["order-101", "order-102"]
+
+# When the LLM emits multiple tool calls in a single turn,
+# Evidor executes them concurrently via asyncio.gather()
+async def main():
+    async with Agent(OpenAIProvider("gpt-4.1-mini"), tools=[fetch_user, fetch_orders]) as agent:
+        response = await agent.send_async("Look up user 42 and their recent orders.")
+        print(response.text)
+
+asyncio.run(main())`,
 
   toolDefinition: `from evidor import tool
 
@@ -57,6 +240,22 @@ def get_weather(location: str, unit: str = "celsius") -> str:
 def add(a: float, b: float) -> float:
     return a + b`,
 
+  toolsQuickstart: `from evidor import Agent, GeminiProvider, tool
+
+@tool
+def search_database(query: str) -> list[str]:
+    """Search internal records by keyword."""
+    return [f"Record 1 matching '{query}'", f"Record 2 matching '{query}'"]
+
+agent = Agent(
+    GeminiProvider(model="gemini-3.8-flash"),
+    tools=[search_database],
+    max_tool_iterations=10,  # Maximum tool execution turns per send() (default: 10)
+)
+
+response = agent.send("Can you check our records for 'alpha project'?")
+print(response.text)`,
+
   asyncTools: `import asyncio
 from evidor import Agent, GeminiProvider, tool
 
@@ -69,139 +268,28 @@ async def fetch_webpage(url: str) -> str:
 
 # Configure an agent with a default timeout for all its tools
 agent = Agent(
-    GeminiProvider(model="gemini-2.5-flash"),
+    GeminiProvider(model="gemini-3.8-flash"),
     tools=[fetch_webpage],
     tool_timeout=10.0,      # Default tool timeout in seconds
     max_tool_iterations=10, # Max tool turns before forcing final synthesis
 )`,
 
-  asyncAgent: `import asyncio
-from evidor import Agent, OpenAIProvider, tool
+  manualTool: `from evidor import Tool
 
-@tool
-async def lookup_account(account_id: str) -> dict:
-    return {"id": account_id, "status": "active"}
-
-async def main() -> None:
-    # Executes natively on caller's event loop (FastAPI, Tornado)
-    agent = Agent(OpenAIProvider(model="gpt-4.1-mini"), tools=[lookup_account])
-    response = await agent.send_async("Check status for account 1234")
-    print(response.text)
-
-asyncio.run(main())`,
-
-  mcpQuickstart: `from evidor import Agent, OpenAIProvider
-
-# Connect to any Model Context Protocol (MCP) server
-agent = Agent(
-    OpenAIProvider(model="gpt-4.1-mini"),
-    mcp_servers={
-        "amazon": {
-            "command": "uvx",
-            "args": ["amazon-mcp-server"],
-            "env": {"AWS_PROFILE": "default"},
-        }
+# Programmatic tool creation without standard Python function inspection
+custom_tool = Tool(
+    name="query_sql",
+    description="Run a read-only SQL query.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "query": {"type": "string", "description": "SQL statement"}
+        },
+        "required": ["query"],
     },
-)
-
-# Tools exposed by the MCP server are automatically discovered and executed
-response = agent.send("Search for Kindle Paperwhite on Amazon and summarize reviews.")
-print(response.text)
-agent.close()`,
-
-  mcpRemote: `from evidor import Agent, GeminiProvider, MCPServerConfig
-
-# Connect multiple MCP servers (local stdio, Streamable HTTP, and legacy SSE)
-agent = Agent(
-    GeminiProvider(model="gemini-2.5-flash"),
-    mcp_servers=[
-        # Stdio subprocess
-        MCPServerConfig.stdio(name="amazon", command="uvx", args=["amazon-mcp-server"]),
-        # Remote Streamable HTTP server
-        MCPServerConfig.http(
-            name="inventory",
-            url="https://inventory.internal/mcp",
-            headers={"Authorization": "Bearer secret-token"},
-        ),
-        # Legacy SSE server
-        MCPServerConfig.sse(name="weather", url="http://localhost:8080/sse"),
-    ],
-)
-
-response = agent.send("Check warehouse stock and recommend hiking boots.")
-print(response.text)
-agent.close()`,
-
-  sharedMcp: `from evidor import Agent, MCPClient, OpenAIProvider
-
-# Boot a single shared MCP client across multiple agents (e.g. FastAPI)
-shared_mcp = MCPClient.from_file("claude_desktop_config.json")
-shared_mcp.connect()
-
-# Both agents reuse the exact same client without duplicating subprocesses:
-researcher = Agent(OpenAIProvider("gpt-4.1-mini"), mcp_client=shared_mcp)
-assistant = Agent(OpenAIProvider("gpt-4.1-mini"), mcp_client=shared_mcp)
-
-res1 = researcher.send("Search records for client ABC.")
-res2 = assistant.send("Verify credentials for client ABC.")
-shared_mcp.close()`,
-
-  retries: `from evidor import Agent, OpenAIProvider, RetryConfig
-
-# Default: 3 retries, initial delay 0.5s, exponential backoff with full jitter
-agent = Agent(
-    OpenAIProvider(model="gpt-4.1-mini"),
-    retry_config=RetryConfig(
-        max_retries=3,              # Max retry attempts (default: 3)
-        initial_delay=0.5,          # Initial backoff delay (seconds)
-        max_delay=60.0,             # Maximum backoff cap
-        backoff_factor=2.0,         # Exponential factor
-        jitter=True,                # Full jitter prevents thundering herds
-    ),
-)
-
-# Under-the-hood: Evidor auto-detects transient 429/5xx and network drops,
-# respects provider Retry-After headers, and coordinates a single retry budget.`,
-
-  telemetryOtel: `from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
-from evidor import Agent, OpenAIProvider, OpenTelemetrySink
-
-provider = TracerProvider()
-provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
-trace.set_tracer_provider(provider)
-
-# Non-blocking telemetry (<1µs latency on agent thread) via dedicated worker
-otel_sink = OpenTelemetrySink(tracer_provider=provider)
-agent = Agent(OpenAIProvider("gpt-4.1-mini"), telemetry=otel_sink)
-
-response = agent.send("Search the documentation for vector embeddings.")
-agent.close()`,
-
-  telemetryLangfuse: `from evidor import Agent, OpenAIProvider, LangfuseSink
-
-# Traces agent execution, latency, and tokens to Langfuse
-langfuse_sink = LangfuseSink()  # Reads credentials from environment
-agent = Agent(OpenAIProvider("gpt-4.1-mini"), telemetry=langfuse_sink)
-
-response = agent.send("Summarize the quarterly earnings report.")
-agent.close()  # Flushes queues and terminates background worker`,
-
-  telemetryPrivacy: `from evidor import Agent, OpenAIProvider
-from evidor.telemetry import OpenTelemetrySink, LangfuseSink
-
-# Metadata-only mode: preserves trace trees, latency, and tokens,
-# but omits/redacts all raw prompt text, LLM outputs, and tool arguments.
-otel_sink = OpenTelemetrySink(capture_content=False)
-langfuse_sink = LangfuseSink(capture_content=False)
-
-agent = Agent(
-    OpenAIProvider("gpt-4.1-mini"),
-    telemetry=[otel_sink, langfuse_sink],
-)
-response = agent.send("Sensitive patient record or financial data...")
-agent.close()`,
+    func=lambda query: f"Results for: {query}",
+    timeout=5.0,
+)`,
 
   builtInTools: `from evidor import Agent, OpenAIProvider, calculator, get_current_time
 
@@ -232,104 +320,170 @@ agent = Agent(OpenAIProvider(model="gpt-4.1-mini"), tools=[search])
 response = agent.send("Find the current Python release notes and cite the sources.")
 print(response.text)`,
 
-  manualTool: `from evidor import Tool
+  webpageReader: `from evidor import Agent, OpenAIProvider, read_webpage, read_webpage_tool
 
-# Programmatic tool creation without standard Python function inspection
-custom_tool = Tool(
-    name="query_sql",
-    description="Run a read-only SQL query.",
-    parameters={
-        "type": "object",
-        "properties": {
-            "query": {"type": "string", "description": "SQL statement"}
-        },
-        "required": ["query"],
-    },
-    func=lambda query: f"Results for: {query}",
-    timeout=5.0,
-)`,
+# Ready-to-use default tool (strips HTML boilerplate, bounded to 15,000 chars)
+agent = Agent(OpenAIProvider(model="gpt-4.1-mini"), tools=[read_webpage])
 
-  multiTurn: `from evidor import Agent, AnthropicProvider
+# Or customized with explicit character and timeout limits
+custom_reader = read_webpage_tool(max_chars=8_000, timeout=10.0)`,
 
-agent = Agent(AnthropicProvider(model="claude-3-5-sonnet-20241022"))
+  evidenceStore: `from evidor import Agent, EvidenceStore, GeminiProvider
 
-# First turn maintains session memory
-agent.send("My favorite color is navy blue.")
+store = EvidenceStore()
 
-# Second turn retains previous turns
-response = agent.send("What color did I say I like?")
-print(response.text)  # "You said your favorite color is navy blue."`,
+# store.tools provides record_evidence, list_evidence, and compare_evidence
+agent = Agent(GeminiProvider(model="gemini-3.8-flash"), tools=[*store.tools])
+agent.send("Analyze trade-offs between PostgreSQL and SQLite and record your findings.")
 
-  systemPrompt: `from evidor import Agent, GeminiProvider
+# Inspect structured findings in Python or format as Markdown
+print(store.to_markdown())
+for item in store.items:
+    print(f"[{item.id}] {item.topic}: {item.finding}")`,
 
-agent = Agent(
-    GeminiProvider(model="gemini-2.5-flash"),
-    system_prompt="You are a concise technical writer. Avoid buzzwords and respond in bullet points.",
-)
+  mcpQuickstart: `from evidor import Agent, OpenAIProvider
 
-response = agent.send("How does a TCP handshake work?")
-print(response.text)`,
-
-  contextManagement: `from evidor import DEFAULT_CONTEXT_WINDOW, DEFAULT_MAX_MESSAGES, Agent, OpenAIProvider
-
+# Connect to external MCP server (e.g. AWS Bedrock, Amazon search)
 agent = Agent(
     OpenAIProvider(model="gpt-4.1-mini"),
-    context_window=16_000,  # Max token budget (default: 16,000)
-    max_messages=50,        # Max messages retained before compaction (default: 50)
-)`,
-
-  summarizationModel: `from evidor import Agent, GeminiProvider, OpenAIProvider
-
-# Option 1: Configure a different model name on the same provider
-agent = Agent(
-    OpenAIProvider(model="gpt-4.1"),
-    summarization_model="gpt-4.1-mini",
+    mcp_servers={
+        "amazon": {
+            "command": "uvx",
+            "args": ["amazon-mcp-server"],
+            "env": {"AWS_PROFILE": "default"},
+        }
+    },
 )
 
-# Option 2: Provide an entirely separate ModelProvider instance
-agent = Agent(
-    OpenAIProvider(model="gpt-4.1"),
-    summarization_model=GeminiProvider(model="gemini-2.5-flash"),
-)`,
-
-  history: `# Inspect conversation history (tuple of Message objects)
-for message in agent.messages:
-    prefix = "[SUMMARY] " if message.is_summary else ""
-    print(f"{prefix}{message.role}: {message.content}")
-
-# Clear conversation turns while keeping original system prompt
-agent.clear_history()`,
-
-  lowLevel: `from evidor import GenerationRequest, Message, OpenAIProvider
-
-provider = OpenAIProvider(model="gpt-4.1-mini")
-
-# Multi-message generation request
-request = GenerationRequest(
-    messages=[
-        Message(role="system", content="You are a helpful assistant."),
-        Message(role="user", content="Explain Raft consensus in one paragraph."),
-    ]
-)
-response = provider.generate(request)
+# Tools exposed by MCP server are automatically discovered and executed
+response = agent.send("Search for Kindle Paperwhite on Amazon and summarize reviews.")
 print(response.text)
+agent.close()`,
 
-# Single-prompt compatibility shortcut
-simple_request = GenerationRequest(prompt="Hello!")
-response = provider.generate(simple_request)`,
+  mcpRemote: `from evidor import Agent, GeminiProvider, MCPServerConfig
+
+# Connect multiple MCP servers (local stdio, Streamable HTTP, and legacy SSE)
+agent = Agent(
+    GeminiProvider(model="gemini-3.8-flash"),
+    mcp_servers=[
+        # Stdio subprocess
+        MCPServerConfig.stdio(name="amazon", command="uvx", args=["amazon-mcp-server"]),
+        # Remote Streamable HTTP server (recommended standard for hosted MCP)
+        MCPServerConfig.http(
+            name="inventory",
+            url="https://inventory.internal/mcp",
+            headers={"Authorization": "Bearer secret-token"},
+        ),
+        # Legacy SSE server
+        MCPServerConfig.sse(name="weather", url="http://localhost:8080/sse"),
+    ],
+)
+
+response = agent.send("Check warehouse stock and recommend hiking boots.")
+print(response.text)
+agent.close()`,
+
+  sharedMcp: `from evidor import Agent, MCPClient, OpenAIProvider
+
+# Boot a single shared MCP client across multiple agents (e.g. FastAPI backends)
+shared_mcp = MCPClient.from_file("claude_desktop_config.json")
+shared_mcp.connect()
+
+# Both agents reuse the exact same client without duplicating subprocesses:
+researcher = Agent(OpenAIProvider("gpt-4.1-mini"), mcp_client=shared_mcp)
+assistant = Agent(OpenAIProvider("gpt-4.1-mini"), mcp_client=shared_mcp)
+
+res1 = researcher.send("Search records for client ABC.")
+res2 = assistant.send("Verify credentials for client ABC.")
+shared_mcp.close()`,
+
+  standaloneMcp: `import asyncio
+from evidor import Agent, MCPClient, OpenAIProvider, tool
+
+@tool
+def internal_calculator(x: int, y: int) -> int:
+    return x * y
+
+async def main():
+    async with MCPClient({"amazon": {"command": "uvx", "args": ["amazon-mcp-server"]}}) as mcp:
+        # Retrieve all Evidor Tool objects from the MCP server
+        mcp_tools = await mcp.get_tools_async()
+
+        # Combine MCP tools with local tools
+        agent = Agent(OpenAIProvider("gpt-4.1-mini"), tools=[*mcp_tools, internal_calculator])
+        response = await agent.send_async("Calculate total price for 3 units of item B08N5WRWNW.")
+        print(response.text)
+
+asyncio.run(main())`,
+
+  telemetryOtel: `from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from evidor import Agent, OpenAIProvider, OpenTelemetrySink
+
+provider = TracerProvider()
+provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+trace.set_tracer_provider(provider)
+
+# Non-blocking telemetry (<1µs latency on agent thread) via dedicated worker
+otel_sink = OpenTelemetrySink(tracer_provider=provider)
+agent = Agent(OpenAIProvider("gpt-4.1-mini"), telemetry=otel_sink)
+
+response = agent.send("Search the documentation for vector embeddings.")
+agent.close()`,
+
+  telemetryLangfuse: `from evidor import Agent, OpenAIProvider, LangfuseSink
+
+# Traces agent execution, latency, and tokens to Langfuse
+langfuse_sink = LangfuseSink()  # Reads credentials from environment
+agent = Agent(OpenAIProvider("gpt-4.1-mini"), telemetry=langfuse_sink)
+
+response = agent.send("Summarize the quarterly earnings report.")
+agent.close()  # Flushes queues and terminates background worker`,
+
+  telemetryThinking: `from evidor import Agent, AnthropicProvider
+from evidor.telemetry import ConsoleSink, OpenTelemetrySink, PhoenixSink, LangfuseSink
+
+# Enable intermediate thinking visibility on any sink (default: capture_thinking=False)
+console_sink = ConsoleSink(capture_content=True, capture_thinking=True)
+otel_sink = OpenTelemetrySink(capture_content=True, capture_thinking=True)
+phoenix_sink = PhoenixSink(capture_content=True, capture_thinking=True)
+langfuse_sink = LangfuseSink(capture_content=True, capture_thinking=True)
+
+agent = Agent(
+    AnthropicProvider(model="claude-3-7-sonnet-20250219", thinking=2048),
+    telemetry=[console_sink, phoenix_sink],
+)
+response = agent.send("Analyze system security risks...")
+agent.close()`,
+
+  telemetryPrivacy: `from evidor import Agent, OpenAIProvider
+from evidor.telemetry import OpenTelemetrySink, LangfuseSink
+
+# Metadata-only mode: preserves trace trees, latency, and tokens,
+# but omits/redacts all raw prompt text, LLM outputs, and tool arguments.
+otel_sink = OpenTelemetrySink(capture_content=False)
+langfuse_sink = LangfuseSink(capture_content=False)
+
+agent = Agent(
+    OpenAIProvider("gpt-4.1-mini"),
+    telemetry=[otel_sink, langfuse_sink],
+)
+response = agent.send("Sensitive patient record or financial data...")
+agent.close()`,
 
   customProvider: `from evidor import GenerationRequest, GenerationResponse, ModelProvider
 
-class CustomProvider:
-    """Implements the Evidor ModelProvider protocol."""
+class CustomAsyncProvider(ModelProvider):
+    """Implements the Evidor ModelProvider protocol with async-first support."""
     def __init__(self, model: str = "custom-model") -> None:
         self.model = model
 
-    def with_model(self, model: str) -> "CustomProvider":
-        return CustomProvider(model=model)
+    def with_model(self, model: str) -> "CustomAsyncProvider":
+        return CustomAsyncProvider(model=model)
 
-    def generate(self, request: GenerationRequest) -> GenerationResponse:
+    async def generate_async(self, request: GenerationRequest) -> GenerationResponse:
+        # Asynchronously call custom model backend
         prompt_text = request.prompt
-        # or iterate over request.messages
-        return GenerationResponse(text="Custom response", model=self.model)`,
+        return GenerationResponse(text="Custom async response", model=self.model)`,
 };

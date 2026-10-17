@@ -7,14 +7,15 @@ import { CODE_EXAMPLES } from '@/lib/constants';
 export function CodeSection() {
   const [activeTab, setActiveTab] = useState<
     | 'quickstart'
-    | 'mcp'
-    | 'retries'
-    | 'telemetry'
-    | 'async'
-    | 'tools'
-    | 'filesystem'
-    | 'websearch'
+    | 'stateful'
+    | 'stateless'
+    | 'thinking'
     | 'compaction'
+    | 'async'
+    | 'mcp'
+    | 'tools'
+    | 'evidence'
+    | 'telemetry'
   >('quickstart');
 
   const tabs = [
@@ -26,32 +27,46 @@ export function CodeSection() {
       filename: 'quickstart.py',
     },
     {
+      id: 'stateful',
+      label: 'Stateful Agent',
+      description: 'Conversations automatically remember context across turns without passing full history.',
+      code: CODE_EXAMPLES.statefulMultiTurn,
+      filename: 'stateful_agent.py',
+    },
+    {
+      id: 'stateless',
+      label: 'Stateless Calls',
+      description: 'Direct single-turn calls with user-managed message history and zero hidden state.',
+      code: CODE_EXAMPLES.userManagedHistory,
+      filename: 'stateless_generation.py',
+    },
+    {
+      id: 'thinking',
+      label: 'Thinking Flags',
+      description: 'Configure reasoning effort, budget tokens, and inspect intermediate scratchpads.',
+      code: CODE_EXAMPLES.thinkingConfig,
+      filename: 'thinking_modes.py',
+    },
+    {
+      id: 'compaction',
+      label: 'Native Compaction',
+      description: 'Offload context compaction directly to model providers at compact_threshold.',
+      code: CODE_EXAMPLES.nativeCompaction,
+      filename: 'native_compaction.py',
+    },
+    {
+      id: 'async',
+      label: 'Concurrent Async',
+      description: 'Async-first execution engine executing multiple tools concurrently via asyncio.gather().',
+      code: CODE_EXAMPLES.concurrentTools,
+      filename: 'async_agent.py',
+    },
+    {
       id: 'mcp',
       label: 'MCP Integration',
       description: 'Connect to external Model Context Protocol (MCP) servers over stdio, HTTP, or SSE.',
       code: CODE_EXAMPLES.mcpQuickstart,
       filename: 'mcp_integration.py',
-    },
-    {
-      id: 'retries',
-      label: 'LLM Retries',
-      description: 'Exponential backoff with full jitter, Retry-After support, and coordinated budgets.',
-      code: CODE_EXAMPLES.retries,
-      filename: 'agent_retries.py',
-    },
-    {
-      id: 'telemetry',
-      label: 'Observability',
-      description: 'Non-blocking actor runtime (<1µs latency on agent thread) exporting to OpenTelemetry & Langfuse.',
-      code: CODE_EXAMPLES.telemetryOtel,
-      filename: 'agent_telemetry.py',
-    },
-    {
-      id: 'async',
-      label: 'Native Async',
-      description: 'Run native async conversations with send_async on event loops (FastAPI, Tornado).',
-      code: CODE_EXAMPLES.asyncAgent,
-      filename: 'async_agent.py',
     },
     {
       id: 'tools',
@@ -61,25 +76,18 @@ export function CodeSection() {
       filename: 'agent_tools.py',
     },
     {
-      id: 'filesystem',
-      label: 'Filesystem Tools',
-      description: 'Safe, scoped filesystem operations bounded to a target root directory.',
-      code: CODE_EXAMPLES.filesystemTools,
-      filename: 'filesystem_agent.py',
+      id: 'evidence',
+      label: 'Evidence Store',
+      description: 'In-memory structured evidence store and bounded webpage reader for research agents.',
+      code: CODE_EXAMPLES.evidenceStore,
+      filename: 'evidence_store.py',
     },
     {
-      id: 'websearch',
-      label: 'Web Search',
-      description: 'Provider-neutral search using Tavily, Exa, or Brave using Python standard library.',
-      code: CODE_EXAMPLES.webSearch,
-      filename: 'websearch_agent.py',
-    },
-    {
-      id: 'compaction',
-      label: 'Context Compaction',
-      description: 'Automatic message and token budget monitoring with model-based compaction.',
-      code: CODE_EXAMPLES.contextManagement,
-      filename: 'context_compaction.py',
+      id: 'telemetry',
+      label: 'Observability & PII',
+      description: 'Non-blocking actor runtime (<1µs overhead) exporting to OpenTelemetry, Langfuse, or Phoenix.',
+      code: CODE_EXAMPLES.telemetryThinking,
+      filename: 'agent_telemetry.py',
     },
   ];
 
@@ -98,7 +106,7 @@ export function CodeSection() {
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 isActive
                   ? 'bg-zinc-800 text-white shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'
               }`}
             >
               {tab.label}
@@ -107,16 +115,17 @@ export function CodeSection() {
         })}
       </div>
 
-      <p className="text-xs text-zinc-500 font-mono">
-        {currentTab.description}
-      </p>
-
-      {/* Code Display */}
-      <CodeBlock
-        code={currentTab.code}
-        filename={currentTab.filename}
-        language="python"
-      />
+      {/* Code Display Area */}
+      <div className="space-y-2">
+        <p className="text-xs text-zinc-400 font-mono">
+          {currentTab.description}
+        </p>
+        <CodeBlock
+          code={currentTab.code}
+          filename={currentTab.filename}
+          language="python"
+        />
+      </div>
     </div>
   );
 }

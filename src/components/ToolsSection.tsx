@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { CodeBlock } from '@/components/CodeBlock';
 import { CODE_EXAMPLES } from '@/lib/constants';
-import { Wrench, RefreshCw, FolderTree, Server } from 'lucide-react';
+import { Wrench, RefreshCw, FolderTree, Server, Boxes, Globe } from 'lucide-react';
 
 export function ToolsSection() {
   const [activeTab, setActiveTab] = useState<
-    'agent' | 'mcp' | 'decorator' | 'async' | 'filesystem' | 'websearch' | 'manual'
+    'agent' | 'mcp' | 'decorator' | 'concurrent' | 'evidence' | 'reader' | 'filesystem' | 'websearch' | 'manual'
   >('agent');
 
   return (
@@ -17,10 +17,10 @@ export function ToolsSection() {
         <div className="p-4 rounded-xl bg-[#09090b] border border-white/[0.08] space-y-2">
           <div className="flex items-center gap-2 text-white font-semibold">
             <Wrench className="w-3.5 h-3.5 text-zinc-400" />
-            <span>Schema Derivation &amp; Errors</span>
+            <span>Schema Derivation &amp; Concurrent Gather</span>
           </div>
           <p className="text-zinc-500 leading-relaxed">
-            The <code className="text-zinc-300 font-mono">@tool</code> decorator extracts JSON Schema from type hints and docstrings. Timeouts and malformed outputs are captured and returned to the model for self-correction.
+            The <code className="text-zinc-300 font-mono">@tool</code> decorator derives JSON Schema from type hints and docstrings. Multi-tool calls in a turn execute concurrently via <code className="text-zinc-300 font-mono">asyncio.gather()</code> with error self-correction.
           </p>
         </div>
 
@@ -30,17 +30,17 @@ export function ToolsSection() {
             <span>Model Context Protocol (MCP)</span>
           </div>
           <p className="text-zinc-500 leading-relaxed">
-            Connect to external MCP servers over <code className="text-zinc-300 font-mono">stdio</code>, modern <code className="text-zinc-300 font-mono">Streamable HTTP</code>, or <code className="text-zinc-300 font-mono">SSE</code>. Tools are discovered and executed with collision prevention.
+            Connect to external MCP servers over <code className="text-zinc-300 font-mono">stdio</code>, modern <code className="text-zinc-300 font-mono">Streamable HTTP</code>, or <code className="text-zinc-300 font-mono">SSE</code>. Share a single client across agents in FastAPI with <code className="text-zinc-300 font-mono">mcp_client</code>.
           </p>
         </div>
 
         <div className="p-4 rounded-xl bg-[#09090b] border border-white/[0.08] space-y-2">
           <div className="flex items-center gap-2 text-white font-semibold">
-            <FolderTree className="w-3.5 h-3.5 text-zinc-400" />
-            <span>Built-in Tools &amp; Web Search</span>
+            <Boxes className="w-3.5 h-3.5 text-zinc-400" />
+            <span>Evidence Store &amp; Web Reader</span>
           </div>
           <p className="text-zinc-500 leading-relaxed">
-            Bundled dependency-free tools include <code className="text-zinc-300 font-mono">calculator</code>, <code className="text-zinc-300 font-mono">get_current_time</code>, sandbox <code className="text-zinc-300 font-mono">filesystem_tools</code>, and pluggable <code className="text-zinc-300 font-mono">web_search</code>.
+            Bundled dependency-free tools include in-memory <code className="text-zinc-300 font-mono">EvidenceStore</code> for research, token-bounded <code className="text-zinc-300 font-mono">read_webpage</code>, sandbox <code className="text-zinc-300 font-mono">filesystem_tools</code>, and <code className="text-zinc-300 font-mono">web_search</code>.
           </p>
         </div>
       </div>
@@ -53,7 +53,7 @@ export function ToolsSection() {
               TOOL DISPATCH LIFECYCLE
             </div>
             <div className="text-sm font-semibold text-white">
-              Autonomous Function-Calling &amp; MCP Integration
+              Autonomous Tool Loops &amp; Concurrent Execution
             </div>
           </div>
 
@@ -68,6 +68,16 @@ export function ToolsSection() {
               }`}
             >
               Agent Loop
+            </button>
+            <button
+              onClick={() => setActiveTab('concurrent')}
+              className={`px-2.5 py-1 rounded transition-colors ${
+                activeTab === 'concurrent'
+                  ? 'bg-zinc-800 text-white font-medium shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              Concurrent Gather
             </button>
             <button
               onClick={() => setActiveTab('mcp')}
@@ -90,14 +100,24 @@ export function ToolsSection() {
               @tool
             </button>
             <button
-              onClick={() => setActiveTab('async')}
+              onClick={() => setActiveTab('evidence')}
               className={`px-2.5 py-1 rounded transition-colors ${
-                activeTab === 'async'
+                activeTab === 'evidence'
                   ? 'bg-zinc-800 text-white font-medium shadow-sm'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              Async &amp; Timeout
+              Evidence Store
+            </button>
+            <button
+              onClick={() => setActiveTab('reader')}
+              className={`px-2.5 py-1 rounded transition-colors ${
+                activeTab === 'reader'
+                  ? 'bg-zinc-800 text-white font-medium shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              Webpage Reader
             </button>
             <button
               onClick={() => setActiveTab('filesystem')}
@@ -141,8 +161,8 @@ export function ToolsSection() {
           </div>
           <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06]">
             <div className="text-zinc-500 text-[10px]">02 / DISPATCH</div>
-            <div className="text-zinc-200 font-medium mt-1">Model emits call</div>
-            <div className="text-[11px] text-zinc-500 mt-1">Routes call to local function, async worker, or external MCP server</div>
+            <div className="text-zinc-200 font-medium mt-1">Concurrent Gather</div>
+            <div className="text-[11px] text-zinc-500 mt-1">Multiple calls in a turn execute concurrently via asyncio.gather()</div>
           </div>
           <div className="p-3 rounded-lg bg-zinc-900/60 border border-white/[0.12]">
             <div className="text-zinc-400 text-[10px]">03 / EXECUTE &amp; CATCH</div>
@@ -165,6 +185,13 @@ export function ToolsSection() {
               language="python"
             />
           )}
+          {activeTab === 'concurrent' && (
+            <CodeBlock
+              code={CODE_EXAMPLES.concurrentTools}
+              filename="concurrent_tools_gather.py"
+              language="python"
+            />
+          )}
           {activeTab === 'mcp' && (
             <CodeBlock
               code={CODE_EXAMPLES.mcpQuickstart}
@@ -179,10 +206,17 @@ export function ToolsSection() {
               language="python"
             />
           )}
-          {activeTab === 'async' && (
+          {activeTab === 'evidence' && (
             <CodeBlock
-              code={CODE_EXAMPLES.asyncTools}
-              filename="async_tool_timeouts.py"
+              code={CODE_EXAMPLES.evidenceStore}
+              filename="evidence_store_agent.py"
+              language="python"
+            />
+          )}
+          {activeTab === 'reader' && (
+            <CodeBlock
+              code={CODE_EXAMPLES.webpageReader}
+              filename="read_webpage_agent.py"
               language="python"
             />
           )}

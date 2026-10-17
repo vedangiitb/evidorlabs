@@ -12,7 +12,7 @@ export function HeroVisual() {
     openai: `from evidor import Agent, OpenAIProvider
 
 agent = Agent(
-    OpenAIProvider(model="gpt-4.1-mini"),
+    OpenAIProvider(model="gpt-6-astra", thinking="high"),
 )
 
 response = agent.send(
@@ -24,7 +24,7 @@ print(response.text)`,
     anthropic: `from evidor import Agent, AnthropicProvider
 
 agent = Agent(
-    AnthropicProvider(model="claude-3-5-sonnet-20241022"),
+    AnthropicProvider(model="claude-3-7-sonnet-20250219", thinking=4096),
 )
 
 response = agent.send(
@@ -36,7 +36,7 @@ print(response.text)`,
     gemini: `from evidor import Agent, GeminiProvider
 
 agent = Agent(
-    GeminiProvider(model="gemini-2.5-flash"),
+    GeminiProvider(model="gemini-3.8-flash", thinking="high"),
 )
 
 response = agent.send(
