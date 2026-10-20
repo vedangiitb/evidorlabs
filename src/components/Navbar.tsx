@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { SITE_CONFIG } from '@/lib/constants';
 import { useReleaseInfo } from '@/lib/useReleaseInfo';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
@@ -36,8 +37,15 @@ export function Navbar() {
             href="/"
             className="flex items-center gap-2.5 group focus:outline-none"
           >
-            <div className="w-5 h-5 rounded-[4px] bg-white flex items-center justify-center text-black font-mono font-bold text-xs shadow-sm">
-              E
+            <div className="w-6 h-6 rounded-[5px] overflow-hidden flex items-center justify-center bg-zinc-950 border border-white/[0.12] shadow-sm shrink-0">
+              <Image
+                src="/logo_evidor.png"
+                alt="Evidor Logo"
+                width={24}
+                height={24}
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
             <span className="font-mono text-sm font-semibold tracking-tight text-white group-hover:text-zinc-300 transition-colors">
               evidor

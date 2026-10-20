@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { ArrowDown, Layers, ArrowRight, Server, Activity, ShieldAlert, Cpu, Zap, Database, BrainCircuit, EyeOff, Radio, Network } from 'lucide-react';
 
 export function ArchitectureDiagram() {
@@ -71,8 +72,14 @@ export function ArchitectureDiagram() {
           <div className="p-4 rounded-lg bg-zinc-900/60 border border-white/[0.12] shadow-sm">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded bg-white text-black flex items-center justify-center font-mono font-bold text-xs">
-                  E
+                <div className="w-8 h-8 rounded overflow-hidden bg-zinc-950 border border-white/[0.12] flex items-center justify-center shrink-0">
+                  <Image
+                    src="/logo_evidor.png"
+                    alt="Evidor Logo"
+                    width={32}
+                    height={32}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div>
                   <div className="text-xs font-bold text-white flex items-center gap-2">

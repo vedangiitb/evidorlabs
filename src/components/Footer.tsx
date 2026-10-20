@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { SITE_CONFIG } from '@/lib/constants';
 import { ArrowUpRight } from 'lucide-react';
 import { GithubIcon } from '@/components/GithubIcon';
@@ -12,8 +13,14 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2 space-y-3">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-[4px] bg-white flex items-center justify-center text-black font-mono font-bold text-xs">
-                E
+              <div className="w-6 h-6 rounded-[5px] overflow-hidden flex items-center justify-center bg-zinc-950 border border-white/[0.12] shrink-0">
+                <Image
+                  src="/logo_evidor.png"
+                  alt="Evidor Logo"
+                  width={24}
+                  height={24}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <span className="font-mono text-sm font-semibold tracking-tight text-white">
                 evidor
