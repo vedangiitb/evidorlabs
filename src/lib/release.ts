@@ -35,15 +35,114 @@ export interface DynamicReleaseInfo {
   fetchedAt: string;
 }
 
-// Fallback data reflecting the published PyPI package (v1.8.0)
+// Fallback data reflecting the published PyPI package (v1.10.1)
 export const FALLBACK_RELEASE_INFO: DynamicReleaseInfo = {
-  version: '1.8.0',
-  publishedDate: '2026-10-17',
+  version: '1.10.1',
+  publishedDate: '2026-10-20',
   pypiUrl: 'https://pypi.org/project/evidor/',
   testPypiUrl: 'https://pypi.org/project/evidor/',
   fetchedAt: new Date().toISOString(),
   source: 'fallback',
   changelog: [
+    {
+      version: 'v1.10.1',
+      date: '2026-10-20',
+      sections: [
+        {
+          category: 'Bug Fixes',
+          items: [
+            {
+              text: 'Fix Gemini streaming empty message and TTFT latency calculation issues',
+              commitHash: 'ff00671',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/ff006712848fc54b487d69860313d8506569f8fd',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      version: 'v1.10.0',
+      date: '2026-10-20',
+      sections: [
+        {
+          category: 'Features',
+          items: [
+            {
+              text: 'Token streaming engine across OpenAI, Anthropic, and Gemini via stream=True',
+              commitHash: 'fb5b58f',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/fb5b58fb2940ff9f9e29634ecc9614a3b9e3f5ff',
+            },
+            {
+              text: 'Streaming intermediate reasoning/thought tokens via chunk.thinking',
+              commitHash: 'fdb1992',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/fdb199243d3df645f3bbbdbdecef6460d67d6104',
+            },
+            {
+              text: 'Real-time tool invocation indicators in streams via chunk.tool_calls with silent argument accumulation',
+              commitHash: '2c89965',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/2c8996576388d2c2efb8a885ba0c45f0debafa70',
+            },
+            {
+              text: 'Precise time_to_first_token_ms (TTFT) tracking and zero-flooding boundary telemetry',
+              commitHash: '21b8a97',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/21b8a97bf0b33001e2aa81a9e701d6887c165854',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      version: 'v1.9.1',
+      date: '2026-10-19',
+      sections: [
+        {
+          category: 'Bug Fixes',
+          items: [
+            {
+              text: 'Telemetry: add missing cached token count to Phoenix sink',
+              commitHash: '536d1fe',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/536d1fed12a37bbc8bb96d008d0530daf578e918',
+            },
+            {
+              text: 'MCP: clean up unused dependencies and connection guards',
+              commitHash: 'c42cfc3',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/c42cfc3039fa2fcf05b045680674508036dde710',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      version: 'v1.9.0',
+      date: '2026-10-19',
+      sections: [
+        {
+          category: 'Features',
+          items: [
+            {
+              text: 'Persistent connection pooling: internal daemon event loop reuses HTTP/2 connections across turns',
+              commitHash: 'd89840a',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/d89840ad6b8cead1b0e9aa4d5e66209f4991b4d7',
+            },
+            {
+              text: 'Eliminate TCP/TLS handshake latency on subsequent turns without tearing down sockets between calls',
+              commitHash: 'ef15b9a',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/ef15b9a428591881a96a8265fb6363974abaf7b0',
+            },
+          ],
+        },
+        {
+          category: 'Bug Fixes',
+          items: [
+            {
+              text: 'Fix client connection caching in multi-turn agent sessions',
+              commitHash: '0984fa9',
+              commitUrl: 'https://github.com/vedangiitb/evidor-core/commit/0984fa9193284e69c2e3132b1757776dfdbdbb09',
+            },
+          ],
+        },
+      ],
+    },
     {
       version: 'v1.8.0',
       date: '2026-10-17',

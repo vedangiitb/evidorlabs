@@ -7,6 +7,7 @@ import { CODE_EXAMPLES } from '@/lib/constants';
 export function CodeSection() {
   const [activeTab, setActiveTab] = useState<
     | 'quickstart'
+    | 'streaming'
     | 'stateful'
     | 'stateless'
     | 'thinking'
@@ -25,6 +26,13 @@ export function CodeSection() {
       description: 'Initialize an Agent with OpenAI and dispatch a query in 5 lines.',
       code: CODE_EXAMPLES.quickstart,
       filename: 'quickstart.py',
+    },
+    {
+      id: 'streaming',
+      label: 'Token Streaming',
+      description: 'Stream responses in real time with stream=True, clean text output, and TTFT telemetry.',
+      code: CODE_EXAMPLES.streamingSync,
+      filename: 'streaming_agent.py',
     },
     {
       id: 'stateful',

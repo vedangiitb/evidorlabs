@@ -1,10 +1,10 @@
 export const SITE_CONFIG = {
   name: 'Evidor',
-  version: '1.8.0',
+  version: '1.10.1',
   status: 'Published on PyPI',
   positioning: 'Provider-agnostic runtime for building AI agents.',
   tagline: 'An open-source, provider-agnostic runtime for building AI agents.',
-  subtagline: 'Stateful & stateless paradigms. Native provider context compaction, thinking flags, async-first concurrent tools, MCP, and <1µs telemetry.',
+  subtagline: 'Token streaming, stateful & stateless paradigms, thinking flags, native context compaction, async execution, MCP, and <1µs telemetry.',
   githubCoreUrl: 'https://github.com/vedangiitb/evidor-core',
   githubLandingUrl: 'https://github.com/vedangiitb/evidorlabs',
   pypiUrl: 'https://pypi.org/project/evidor/',
@@ -19,6 +19,114 @@ export const CODE_EXAMPLES = {
 agent = Agent(OpenAIProvider(model="gpt-4.1-mini"))
 response = agent.send("Give a one-sentence explanation of dependency inversion.")
 print(response.text)`,
+
+  streamingSync: `from evidor import Agent, OpenAIProvider
+
+agent = Agent(OpenAIProvider(model="gpt-6-astra"))
+
+# Stream responses token-by-token
+stream = agent.send("Write a short haiku about debugging code.", stream=True)
+for chunk in stream:
+    print(chunk, end="", flush=True)
+
+# Access final accumulated response, token usage, and latency
+print(f"\\nModel: {stream.response.model}")
+print(f"Total tokens: {stream.response.usage.total_tokens}")
+print(f"Time to first token: {stream.time_to_first_token_ms:.1f}ms")`,
+
+  streamingAsync: `import asyncio
+from evidor import Agent, GeminiProvider
+
+async def main():
+    agent = Agent(GeminiProvider(model="gemini-3.8-flash"))
+    stream = await agent.send_async("Explain how event loops work.", stream=True)
+    async for chunk in stream:
+        print(chunk, end="", flush=True)
+
+    print(f"\\nFinished with {stream.time_to_first_token_ms:.1f}ms TTFT")
+
+asyncio.run(main())`,
+
+  streamingTools: `from evidor import Agent, GeminiProvider, tool
+
+@tool
+def check_order_status(order_id: str) -> str:
+    """Look up order shipping status."""
+    return f"Order {order_id} is out for delivery."
+
+agent = Agent(GeminiProvider(model="gemini-3.8-flash"), tools=[check_order_status])
+stream = agent.send("Where is my order ORD-992?", stream=True)
+
+for chunk in stream:
+    # chunk.tool_calls contains fully validated ToolCall instances when a tool is invoked
+    if chunk.tool_calls:
+        for call in chunk.tool_calls:
+            print(f"\\n[⚡ Executing tool: {call.name} with args {call.arguments}]")
+
+    # Regular text tokens (arguments accumulate silently without polluting chunk.text)
+    print(chunk, end="", flush=True)`,
+
+  streamingThinking: `from evidor import Agent, AnthropicProvider
+
+agent = Agent(AnthropicProvider(model="claude-3-7-sonnet-20250219", thinking=2048))
+stream = agent.send("Solve: Which is greater, 9.11 or 9.9?", stream=True)
+
+for chunk in stream:
+    if chunk.thinking:
+        print(f"\\033[90m{chunk.thinking}\\033[0m", end="", flush=True)  # Dim thinking text
+    if chunk.text:
+        print(chunk.text, end="", flush=True)`,
+
+  streamingStateless: `from evidor import GenerationRequest, OpenAIProvider
+
+provider = OpenAIProvider(model="gpt-6-astra")
+
+request = GenerationRequest(
+    prompt="Explain consensus in distributed systems.",
+    stream=True,
+)
+
+# Synchronous streaming
+stream = provider.generate(request)
+for chunk in stream:
+    print(chunk, end="", flush=True)
+
+# Asynchronous streaming
+# stream = await provider.generate_async(request)
+# async for chunk in stream:
+#     print(chunk, end="", flush=True)`,
+
+  streamingContextManager: `from evidor import Agent, OpenAIProvider
+
+agent = Agent(OpenAIProvider(model="gpt-6-astra"))
+
+# Sync context manager ensures deterministic cleanup even on early break
+with agent.send("List 5 facts about space.", stream=True) as stream:
+    for chunk in stream:
+        print(chunk, end="", flush=True)
+
+# Async context manager
+# async with await agent.send_async("List 5 facts about space.", stream=True) as stream:
+#     async for chunk in stream:
+#         print(chunk, end="", flush=True)
+
+# Final accumulated response can also be retrieved via helper:
+# final_response = stream.get_final_response()`,
+
+  persistentConnectionPool: `import time
+from evidor import Agent, OpenAIProvider
+
+# Persistent connection pooling: internal daemon event loop reuses HTTP/2 connections
+agent = Agent(OpenAIProvider(model="gpt-6-astra"))
+
+# Turn 1: Establishes HTTP/2 TLS session
+agent.send("Hello, initialize session.")
+
+# Turn 2: Sockets and TLS state are preserved; 0ms handshake overhead
+agent.send("Tell me a quick tip.")
+
+# Clean shutdown
+agent.close()`,
 
   statefulMultiTurn: `from evidor import Agent, OpenAIProvider
 

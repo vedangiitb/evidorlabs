@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowDown, Layers, ArrowRight, Server, Activity, ShieldAlert, Cpu, Zap, Database, BrainCircuit, EyeOff } from 'lucide-react';
+import { ArrowDown, Layers, ArrowRight, Server, Activity, ShieldAlert, Cpu, Zap, Database, BrainCircuit, EyeOff, Radio, Network } from 'lucide-react';
 
 export function ArchitectureDiagram() {
   return (
@@ -11,14 +11,14 @@ export function ArchitectureDiagram() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-8 border-b border-white/[0.06] gap-2 relative z-10">
         <div>
           <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-semibold mb-1">
-            <span>SPECIFICATION // v1.8.0</span>
+            <span>SPECIFICATION // v1.10.1</span>
           </div>
           <h3 className="text-xl font-bold text-white tracking-tight">
             System Topology &amp; Runtime Pipeline
           </h3>
         </div>
         <div className="text-xs font-mono text-zinc-400">
-          Stateful &amp; Stateless • Native Compaction • Thinking Flags • Async Multi-Tool Engine
+          Token Streaming • Connection Pooling • Native Compaction • Thinking Flags • Async Multi-Tool Engine
         </div>
       </div>
 
@@ -28,9 +28,9 @@ export function ArchitectureDiagram() {
         <div className="lg:col-span-7 space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">
-              1. Two Execution Paradigms
+              1. Two Execution Paradigms + Token Streaming
             </span>
-            <span className="text-[11px] font-mono text-zinc-500">Stateful Agent &amp; Stateless Calls</span>
+            <span className="text-[11px] font-mono text-zinc-500">Sync &amp; Async Streaming</span>
           </div>
 
           {/* Level 1: Application Split */}
@@ -41,10 +41,10 @@ export function ArchitectureDiagram() {
                 <span className="text-xs font-semibold text-white">Stateful Agent (Recommended)</span>
               </div>
               <p className="text-[11px] text-zinc-400 mb-2">
-                Automatic context memory across turns, server-side chaining &amp; autonomous tool loops.
+                Automatic context memory, server-side chaining, token streaming &amp; autonomous tool loops.
               </p>
               <code className="text-[10px] font-mono text-emerald-300 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800 self-start">
-                agent.send() / send_async()
+                agent.send(..., stream=True)
               </code>
             </div>
 
@@ -54,7 +54,7 @@ export function ArchitectureDiagram() {
                 <span className="text-xs font-semibold text-white">Stateless LLM Calls</span>
               </div>
               <p className="text-[11px] text-zinc-400 mb-2">
-                Direct single-turn calls with user-managed message history and zero hidden state.
+                Direct single-turn calls with user-managed history, zero hidden state &amp; token streaming.
               </p>
               <code className="text-[10px] font-mono text-cyan-300 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800 self-start">
                 provider.generate(request)
@@ -78,28 +78,28 @@ export function ArchitectureDiagram() {
                   <div className="text-xs font-bold text-white flex items-center gap-2">
                     <span>Evidor Runtime</span>
                     <span className="text-[10px] font-mono text-zinc-400 border border-zinc-700 bg-zinc-800 px-1 rounded">
-                      Core Harness
+                      Core Harness v1.10.1
                     </span>
                   </div>
                   <div className="text-[11px] text-zinc-400">
-                    Native context continuation, concurrent multi-tool gather, MCP bridge &amp; telemetry
+                    Token streaming generator, persistent HTTP/2 pool, concurrent multi-tool gather &amp; telemetry
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 text-[10px] font-mono pt-2 border-t border-zinc-800 text-zinc-400">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-mono pt-2 border-t border-zinc-800 text-zinc-400">
               <div>
-                <span className="text-zinc-500">Compaction:</span>{' '}
-                <span className="text-zinc-200">compact_threshold</span>
+                <span className="text-zinc-500">Streaming:</span>{' '}
+                <span className="text-amber-400">TTFT &amp; Chunks</span>
+              </div>
+              <div>
+                <span className="text-zinc-500">Pooling:</span>{' '}
+                <span className="text-cyan-400">Daemon Loop</span>
               </div>
               <div>
                 <span className="text-zinc-500">Thinking:</span>{' '}
-                <span className="text-purple-400">Flags &amp; Scratchpad</span>
-              </div>
-              <div>
-                <span className="text-zinc-500">Async:</span>{' '}
-                <span className="text-emerald-400">asyncio.gather</span>
+                <span className="text-purple-400">Flags &amp; Stream</span>
               </div>
               <div>
                 <span className="text-zinc-500">Telemetry:</span>{' '}
@@ -121,11 +121,11 @@ export function ArchitectureDiagram() {
               </div>
               <div>
                 <div className="text-xs font-semibold text-white">ModelProvider Protocol</div>
-                <div className="text-[11px] text-zinc-500">Async-first interface: generate_async(request) &amp; generate(request)</div>
+                <div className="text-[11px] text-zinc-500">Unified streaming &amp; async interface: generate_async &amp; generate with stream=True</div>
               </div>
             </div>
             <code className="text-[11px] font-mono text-zinc-400">
-              GenerationRequest
+              GenerationRequest(stream=True)
             </code>
           </div>
 
@@ -139,22 +139,22 @@ export function ArchitectureDiagram() {
             <div className="p-2.5 rounded bg-zinc-950 border border-white/[0.08] hover:border-zinc-700 transition-colors">
               <div className="text-white font-semibold">OpenAI</div>
               <div className="text-[10px] text-zinc-500 mt-0.5">gpt-6-astra</div>
-              <div className="text-[9px] text-emerald-400/80 mt-1">Responses API</div>
+              <div className="text-[9px] text-emerald-400/80 mt-1">Responses Streaming</div>
             </div>
             <div className="p-2.5 rounded bg-zinc-950 border border-white/[0.08] hover:border-zinc-700 transition-colors">
               <div className="text-white font-semibold">Anthropic</div>
               <div className="text-[10px] text-zinc-500 mt-0.5">claude-3-7-sonnet</div>
-              <div className="text-[9px] text-purple-400/80 mt-1">Prompt Caching</div>
+              <div className="text-[9px] text-purple-400/80 mt-1">Thinking Streams</div>
             </div>
             <div className="p-2.5 rounded bg-zinc-950 border border-white/[0.08] hover:border-zinc-700 transition-colors">
               <div className="text-white font-semibold">Gemini</div>
               <div className="text-[10px] text-zinc-500 mt-0.5">gemini-3.8-flash</div>
-              <div className="text-[9px] text-blue-400/80 mt-1">Interactions API</div>
+              <div className="text-[9px] text-blue-400/80 mt-1">Live Interop</div>
             </div>
             <div className="p-2.5 rounded bg-zinc-950 border border-white/[0.08] hover:border-zinc-700 transition-colors">
               <div className="text-white font-semibold">Custom</div>
               <div className="text-[10px] text-zinc-500 mt-0.5">Any LLM</div>
-              <div className="text-[9px] text-zinc-400 mt-1">Async Provider</div>
+              <div className="text-[9px] text-zinc-400 mt-1">Async Streamer</div>
             </div>
           </div>
         </div>
@@ -165,11 +165,37 @@ export function ArchitectureDiagram() {
             <span className="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">
               2. Subsystems &amp; Bridges
             </span>
-            <span className="text-[11px] font-mono text-zinc-500">v1.8.0 Architecture</span>
+            <span className="text-[11px] font-mono text-zinc-500">v1.10.1 Engine</span>
           </div>
 
           <div className="space-y-2.5 text-xs">
-            {/* Subsystem 1: Native Provider Compaction */}
+            {/* Subsystem: Token Streaming & TTFT */}
+            <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06] flex items-start gap-3">
+              <span className="w-5 h-5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-[10px] text-zinc-400 shrink-0 mt-0.5">
+                <Radio className="w-3 h-3 text-amber-400" />
+              </span>
+              <div>
+                <div className="font-semibold text-white">Token Streaming &amp; TTFT</div>
+                <div className="text-[11px] text-zinc-500 mt-0.5">
+                  <code className="text-zinc-300 font-mono">stream=True</code> yielding <code className="text-zinc-300 font-mono">chunk.text</code>, <code className="text-zinc-300 font-mono">chunk.thinking</code>, <code className="text-zinc-300 font-mono">chunk.tool_calls</code> with precise TTFT tracking.
+                </div>
+              </div>
+            </div>
+
+            {/* Subsystem: Persistent Connection Pooling */}
+            <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06] flex items-start gap-3">
+              <span className="w-5 h-5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-[10px] text-zinc-400 shrink-0 mt-0.5">
+                <Network className="w-3 h-3 text-cyan-400" />
+              </span>
+              <div>
+                <div className="font-semibold text-white">Connection Pooling &amp; Daemon Loop</div>
+                <div className="text-[11px] text-zinc-500 mt-0.5">
+                  Internal daemon event loop preserves HTTP/2 keep-alive sockets across turns, eliminating TCP/TLS handshake latency.
+                </div>
+              </div>
+            </div>
+
+            {/* Subsystem: Native Provider Compaction */}
             <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06] flex items-start gap-3">
               <span className="w-5 h-5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-[10px] text-zinc-400 shrink-0 mt-0.5">
                 <Database className="w-3 h-3 text-blue-400" />
@@ -182,7 +208,7 @@ export function ArchitectureDiagram() {
               </div>
             </div>
 
-            {/* Subsystem 2: Thinking & Reasoning Flags */}
+            {/* Subsystem: Thinking & Reasoning Flags */}
             <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06] flex items-start gap-3">
               <span className="w-5 h-5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-[10px] text-zinc-400 shrink-0 mt-0.5">
                 <BrainCircuit className="w-3 h-3 text-purple-400" />
@@ -195,7 +221,7 @@ export function ArchitectureDiagram() {
               </div>
             </div>
 
-            {/* Subsystem 3: Async-First Multi-Tool Engine */}
+            {/* Subsystem: Async-First Multi-Tool Engine */}
             <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06] flex items-start gap-3">
               <span className="w-5 h-5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-[10px] text-zinc-400 shrink-0 mt-0.5">
                 <Zap className="w-3 h-3 text-emerald-400" />
@@ -208,28 +234,15 @@ export function ArchitectureDiagram() {
               </div>
             </div>
 
-            {/* Subsystem 4: MCP Bridge */}
-            <div className="p-3 rounded-lg bg-zinc-950 border border-white/[0.06] flex items-start gap-3">
-              <span className="w-5 h-5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-[10px] text-zinc-400 shrink-0 mt-0.5">
-                <Server className="w-3 h-3" />
-              </span>
-              <div>
-                <div className="font-semibold text-white">Model Context Protocol (MCP)</div>
-                <div className="text-[11px] text-zinc-500 mt-0.5">
-                  Connect over stdio, Streamable HTTP, or SSE with shared <code className="text-zinc-300 font-mono">MCPClient</code> for FastAPI.
-                </div>
-              </div>
-            </div>
-
-            {/* Subsystem 5: Telemetry Actor & PII */}
+            {/* Subsystem: Decoupled Telemetry Actor */}
             <div className="p-3 rounded-lg bg-zinc-900/60 border border-white/[0.12] flex items-start gap-3">
               <span className="w-5 h-5 rounded bg-white text-black flex items-center justify-center font-mono text-[10px] font-bold shrink-0 mt-0.5">
                 <Activity className="w-3 h-3" />
               </span>
               <div>
-                <div className="font-semibold text-white">Decoupled Telemetry Actor</div>
+                <div className="font-semibold text-white">Zero-Flooding Telemetry Actor</div>
                 <div className="text-[11px] text-zinc-400 mt-0.5">
-                  &lt;1µs emission queue with <code className="text-zinc-200 font-mono">capture_thinking</code> and <code className="text-zinc-200 font-mono">capture_content=False</code> metadata-only auditing.
+                  Boundary emission for streams with TTFT tracking, <code className="text-zinc-200 font-mono">capture_thinking</code> and <code className="text-zinc-200 font-mono">capture_content=False</code> metadata auditing.
                 </div>
               </div>
             </div>

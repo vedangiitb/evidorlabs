@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Server,
@@ -26,9 +26,14 @@ import {
   BrainCircuit,
   FileText,
   Boxes,
+  Play,
+  Pause,
+  RotateCcw,
+  Radio,
+  Network,
 } from 'lucide-react';
 
-type FilterCategory = 'all' | 'paradigms' | 'compaction' | 'thinking' | 'async_mcp' | 'telemetry';
+type FilterCategory = 'all' | 'streaming' | 'paradigms' | 'compaction' | 'thinking' | 'async_mcp' | 'telemetry';
 
 export function CapabilitiesSection({ version }: { version: string }) {
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
@@ -42,6 +47,115 @@ export function CapabilitiesSection({ version }: { version: string }) {
   const [captureThinking, setCaptureThinking] = useState(true);
   const [piiRedacted, setPiiRedacted] = useState(false);
   const [telemetryTab, setTelemetryTab] = useState<'otel' | 'langfuse' | 'prometheus'>('otel');
+
+  // Streaming micro-simulator
+  const [streamingMode, setStreamingMode] = useState<'sync' | 'async' | 'tools' | 'thinking'>('sync');
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [streamStep, setStreamStep] = useState(0);
+
+  interface StreamItem {
+    prompt: string;
+    ttft: number;
+    tokens: string[];
+    model: string;
+    toolCalls?: { name: string; args: string } | null;
+    thinkingTokens?: string[] | null;
+  }
+
+  // Sample token streams
+  const STREAM_DATA: Record<'sync' | 'async' | 'tools' | 'thinking', StreamItem> = {
+    sync: {
+      prompt: 'agent.send("Debugging quote", stream=True)',
+      ttft: 124.6,
+      tokens: [
+        'Debugging ', 'is ', 'twice ', 'as ', 'hard ', 'as ', 'writing ', 'the ',
+        'code ', 'in ', 'the ', 'first ', 'place. ', 'Therefore, ', 'if ', 'you ',
+        'write ', 'the ', 'code ', 'as ', 'cleverly ', 'as ', 'possible, ', 'you ',
+        'are, ', 'by ', 'definition, ', 'not ', 'smart ', 'enough ', 'to ', 'debug ', 'it.'
+      ],
+      model: 'gpt-6-astra',
+      toolCalls: null,
+      thinkingTokens: null,
+    },
+    async: {
+      prompt: 'await agent.send_async("Explain event loops", stream=True)',
+      ttft: 89.2,
+      tokens: [
+        'Event ', 'loops ', 'multiplex ', 'I/O ', 'operations ', 'cooperatively ',
+        'on ', 'a ', 'single ', 'thread, ', 'switching ', 'tasks ', 'at ', 'await ',
+        'points ', 'without ', 'OS ', 'thread ', 'switching ', 'overhead.'
+      ],
+      model: 'gemini-3.8-flash',
+      toolCalls: null,
+      thinkingTokens: null,
+    },
+    tools: {
+      prompt: 'agent.send("Where is my order ORD-992?", stream=True)',
+      ttft: 142.1,
+      toolCalls: { name: 'check_order_status', args: 'order_id="ORD-992"' },
+      tokens: [
+        'Your ', 'package ', '(ORD-992) ', 'is ', 'currently ', 'out ', 'for ',
+        'delivery ', 'with ', 'courier ', 'unit ', '#412. ', 'Estimated ',
+        'delivery ', 'window ', 'is ', 'today ', 'between ', '3:00 ', 'and ', '4:30 ', 'PM.'
+      ],
+      model: 'gemini-3.8-flash',
+      thinkingTokens: null,
+    },
+    thinking: {
+      prompt: 'agent.send("Which is larger: 9.11 or 9.9?", stream=True)',
+      ttft: 156.4,
+      thinkingTokens: [
+        '1. Comparing 9.11 and 9.9... ',
+        '2. In decimal format: 9.11 vs 9.90... ',
+        '3. 9.90 is greater than 9.11.'
+      ],
+      tokens: [
+        '9.9 ', 'is ', 'greater ', 'than ', '9.11. ', 'When ', 'aligning ', 'decimal ',
+        'places, ', '9.9 ', 'equals ', '9.90, ', 'which ', 'is ', 'strictly ', 'larger ',
+        'than ', '9.11.'
+      ],
+      model: 'claude-3-7-sonnet-20250219',
+      toolCalls: null,
+    },
+  };
+
+  const currentStream = STREAM_DATA[streamingMode];
+  const totalTokens = currentStream.tokens.length;
+
+  // Stream animation loop
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (isStreaming) {
+      interval = setInterval(() => {
+        setStreamStep((prev) => {
+          if (prev >= totalTokens) {
+            setIsStreaming(false);
+            return totalTokens;
+          }
+          return prev + 1;
+        });
+      }, 55);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isStreaming, totalTokens]);
+
+  const handleStartStream = () => {
+    setStreamStep(0);
+    setIsStreaming(true);
+  };
+
+  const handleResetStream = () => {
+    setIsStreaming(false);
+    setStreamStep(totalTokens);
+  };
+
+  const handleModeChange = (mode: 'sync' | 'async' | 'tools' | 'thinking') => {
+    setStreamingMode(mode);
+    setIsStreaming(false);
+    setStreamStep(STREAM_DATA[mode].tokens.length);
+  };
 
   const handleCopy = async (code: string, id: string) => {
     await navigator.clipboard.writeText(code);
@@ -58,6 +172,7 @@ export function CapabilitiesSection({ version }: { version: string }) {
         <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-[#09090b] border border-white/[0.08]">
           {[
             { id: 'all', label: 'All Capabilities' },
+            { id: 'streaming', label: 'Token Streaming & TTFT' },
             { id: 'paradigms', label: 'Stateful vs Stateless' },
             { id: 'compaction', label: 'Native Compaction' },
             { id: 'thinking', label: 'Thinking & Reasoning' },
@@ -89,6 +204,153 @@ export function CapabilitiesSection({ version }: { version: string }) {
 
       {/* Dynamic Bento Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* ========================================================================= */}
+        {/* BENTO CARD: TOKEN STREAMING ENGINE - Span 2 */}
+        {/* ========================================================================= */}
+        {(activeFilter === 'all' || activeFilter === 'streaming') && (
+          <div className="md:col-span-2 p-6 rounded-2xl bg-[#09090b] border border-white/[0.08] hover:border-amber-500/30 transition-all group relative overflow-hidden flex flex-col justify-between">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-amber-950/60 border border-amber-800/60 flex items-center justify-center text-amber-400">
+                    <Radio className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
+                      <span>Token Streaming Engine</span>
+                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20">
+                        v1.10.1 Engine
+                      </span>
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Streaming Mode Pills */}
+                <div className="flex items-center gap-1 p-0.5 rounded-md bg-zinc-950 border border-zinc-800 text-[11px] font-mono">
+                  {(['sync', 'async', 'tools', 'thinking'] as const).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => handleModeChange(m)}
+                      className={`px-2.5 py-1 rounded capitalize transition-colors ${
+                        streamingMode === m
+                          ? 'bg-zinc-800 text-white font-medium'
+                          : 'text-zinc-500 hover:text-zinc-300'
+                      }`}
+                    >
+                      {m === 'sync' ? 'Sync' : m === 'async' ? 'Async' : m === 'tools' ? 'With Tools' : 'Thinking'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-xl mb-4">
+                Stream tokens in real time across OpenAI, Gemini, and Anthropic with unified syntax. Tool arguments accumulate silently in the background without polluting the text stream, thinking tokens stream via <code className="text-zinc-200 font-mono">chunk.thinking</code>, and latency is tracked with precise TTFT metrics.
+              </p>
+
+              {/* Interactive Streaming Simulator Terminal */}
+              <div className="rounded-xl bg-black border border-white/[0.06] p-3.5 space-y-2.5 font-mono text-xs">
+                {/* Terminal Header */}
+                <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] border-b border-zinc-900 pb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400">{currentStream.prompt}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-400">
+                      TTFT: <strong className="text-amber-300">{currentStream.ttft}ms</strong>
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-400">
+                      {currentStream.model}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tool Call event indicator if tools mode */}
+                {currentStream.toolCalls && (
+                  <div className="p-2 rounded bg-amber-950/30 border border-amber-800/40 text-[10px] text-amber-300 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-3 h-3 text-amber-400 animate-pulse" />
+                      <span>[⚡ Tool Call Dispatched]: <code className="text-white">{currentStream.toolCalls.name}({currentStream.toolCalls.args})</code></span>
+                    </div>
+                    <span className="text-emerald-400 font-semibold">Executed (18ms)</span>
+                  </div>
+                )}
+
+                {/* Thinking tokens scratchpad if thinking mode */}
+                {currentStream.thinkingTokens && (
+                  <div className="p-2.5 rounded bg-purple-950/20 border border-purple-900/40 text-[10px] text-purple-300/80 space-y-1">
+                    <div className="text-purple-400 font-semibold flex items-center gap-1.5">
+                      <BrainCircuit className="w-3 h-3" />
+                      <span>REASONING SCRATCHPAD (chunk.thinking):</span>
+                    </div>
+                    <div className="italic text-purple-200/70">
+                      {currentStream.thinkingTokens.join('')}
+                    </div>
+                  </div>
+                )}
+
+                {/* Output Token Stream Container */}
+                <div className="min-h-[58px] p-2.5 rounded bg-zinc-950 border border-zinc-800/80 text-[12px] text-zinc-200 leading-relaxed font-sans sm:font-mono">
+                  {currentStream.tokens.slice(0, streamStep).join('')}
+                  {isStreaming && (
+                    <span className="inline-block w-1.5 h-3.5 bg-amber-400 animate-pulse ml-0.5 align-middle" />
+                  )}
+                  {!isStreaming && streamStep === 0 && (
+                    <span className="text-zinc-600 italic font-mono text-[11px]">Click &quot;Simulate Stream&quot; to test live token dispatch...</span>
+                  )}
+                </div>
+
+                {/* Interactive Controls & Telemetry Stats */}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-zinc-900 text-[10px]">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={isStreaming ? () => setIsStreaming(false) : handleStartStream}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-400 text-black hover:bg-amber-300 font-semibold transition-colors"
+                    >
+                      {isStreaming ? (
+                        <>
+                          <Pause className="w-3 h-3" />
+                          <span>Pause</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-3 h-3" />
+                          <span>{streamStep === totalTokens ? 'Replay Stream' : 'Simulate Stream'}</span>
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={handleResetStream}
+                      className="px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
+                    >
+                      Show Full
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-zinc-500">
+                    <span>
+                      Tokens: <strong className="text-zinc-300">{streamStep} / {totalTokens}</strong>
+                    </span>
+                    <span className="hidden sm:inline-flex items-center gap-1 text-cyan-400">
+                      <Network className="w-3 h-3" />
+                      <span>HTTP/2 Pool Reused</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+              <span>stream=True &amp; stream.time_to_first_token_ms</span>
+              <Link href="/docs#streaming-overview" className="text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
+                <span>View Streaming Guide</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* ========================================================================= */}
         {/* BENTO CARD 1: TWO EXECUTION PARADIGMS - Span 2 */}
         {/* ========================================================================= */}

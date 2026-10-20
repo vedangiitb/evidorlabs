@@ -27,6 +27,8 @@ import {
   Workflow,
   Database,
   Cpu,
+  Radio,
+  Network,
 } from 'lucide-react';
 
 const DOCS_SECTIONS = [
@@ -58,6 +60,18 @@ const DOCS_SECTIONS = [
     ],
   },
   {
+    category: 'Streaming Responses',
+    items: [
+      { id: 'streaming-overview', title: 'Unified Streaming Architecture' },
+      { id: 'streaming-sync', title: 'Synchronous Streaming (agent.send)' },
+      { id: 'streaming-async', title: 'Asynchronous Streaming (send_async)' },
+      { id: 'streaming-tools', title: 'Streaming with Autonomous Tools' },
+      { id: 'streaming-thinking', title: 'Streaming Thinking & Reasoning Tokens' },
+      { id: 'streaming-stateless', title: 'Stateless Provider Streaming' },
+      { id: 'streaming-cleanup', title: 'Context Managers & TTFT Telemetry' },
+    ],
+  },
+  {
     category: 'Reasoning & Thinking Mode',
     items: [
       { id: 'thinking-mode', title: 'Configurable Thinking Flags' },
@@ -70,6 +84,7 @@ const DOCS_SECTIONS = [
     items: [
       { id: 'async-conversations', title: 'Native Async Conversations' },
       { id: 'concurrent-tools', title: 'Concurrent Multi-Tool Gather' },
+      { id: 'connection-pooling', title: 'Persistent Connection Pooling' },
       { id: 'loop-guards', title: 'Event Loop Guards & Teardown' },
     ],
   },
@@ -623,6 +638,170 @@ pip install "evidor[all]"`}
               />
             </section>
 
+            {/* STREAMING RESPONSES: OVERVIEW */}
+            <section id="streaming-overview" className="space-y-3 scroll-mt-24">
+              <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                STREAMING ENGINE
+              </div>
+              <div className="flex items-center gap-2">
+                <Radio className="w-5 h-5 text-amber-400" />
+                <h2 className="text-xl font-bold text-white tracking-tight">
+                  Streaming Responses: Unified Architecture
+                </h2>
+              </div>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Evidor provides a provider-agnostic streaming interface across all supported model providers (<strong>OpenAI</strong>, <strong>Google Gemini</strong>, and <strong>Anthropic Claude</strong>). By passing <code className="text-zinc-200 font-mono">stream=True</code>, you receive an iterable stream of lightweight chunks that emit tokens in real time while maintaining 100% compatibility with conversation memory, tool execution loops, and observability.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 space-y-1">
+                  <div className="text-white font-semibold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    <span>Clean Stringification</span>
+                  </div>
+                  <p className="text-zinc-400 text-[11px] leading-relaxed">
+                    Chunks stringify directly to their text (<code className="text-zinc-300 font-mono">str(chunk)</code> returns <code className="text-zinc-300 font-mono">chunk.text</code>), so standard printing works out of the box: <code className="text-zinc-300 font-mono">print(chunk, end=&quot;&quot;, flush=True)</code>.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 space-y-1">
+                  <div className="text-white font-semibold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    <span>Silent Argument Buffering</span>
+                  </div>
+                  <p className="text-zinc-400 text-[11px] leading-relaxed">
+                    Tool arguments stream silently behind the scenes without polluting <code className="text-zinc-300 font-mono">chunk.text</code>. When tool execution finishes, the final synthesized response streams to the caller.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 space-y-1">
+                  <div className="text-white font-semibold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    <span>Automatic State Commit</span>
+                  </div>
+                  <p className="text-zinc-400 text-[11px] leading-relaxed">
+                    At stream completion, message history, compaction summaries, and server-side state (<code className="text-zinc-300 font-mono">last_response_id</code>) are automatically updated and persisted.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* STREAMING: SYNCHRONOUS */}
+            <section id="streaming-sync" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Synchronous Streaming (agent.send)
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Call <code className="text-zinc-200 font-mono">agent.send(prompt, stream=True)</code> to receive an iterable stream. After consuming tokens, inspect the final accumulated response, token usage, and latency metrics:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.streamingSync}
+                filename="streaming_sync.py"
+                language="python"
+              />
+
+              <div className="p-3 rounded-md bg-zinc-950 border border-zinc-800 text-xs text-zinc-400">
+                <strong className="text-white block mb-1">Stream Inspection:</strong>
+                <code className="text-zinc-200 font-mono">stream.response</code> provides the fully accumulated <code className="text-zinc-200 font-mono">GenerationResponse</code> object, including total tokens, finish reason, and model metadata.
+              </div>
+            </section>
+
+            {/* STREAMING: ASYNCHRONOUS */}
+            <section id="streaming-async" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Asynchronous Streaming (agent.send_async)
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                In async environments (FastAPI, Starlette, Tornado, async background workers), use <code className="text-zinc-200 font-mono">await agent.send_async(..., stream=True)</code> and iterate with <code className="text-zinc-200 font-mono">async for chunk in stream:</code>:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.streamingAsync}
+                filename="streaming_async.py"
+                language="python"
+              />
+            </section>
+
+            {/* STREAMING: TOOLS */}
+            <section id="streaming-tools" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Streaming with Tools: Seamless Background Execution
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                When an agent needs to execute tools during a streaming turn:
+              </p>
+
+              <div className="space-y-2 text-xs sm:text-sm text-zinc-400 leading-relaxed pl-2">
+                <div>1. <strong>Clean Text Output:</strong> Tool arguments stream and accumulate silently behind the scenes. <code className="text-zinc-200 font-mono">chunk.text</code> remains empty string (<code className="text-zinc-200 font-mono">&quot;&quot;</code>), ensuring raw JSON arguments never pollute the client stream.</div>
+                <div>2. <strong>Automatic Execution:</strong> The agent detects and executes the tool function (concurrently via <code className="text-zinc-200 font-mono">asyncio.gather()</code> if multiple tools were invoked) and updates the conversation history with the tool result.</div>
+                <div>3. <strong>Follow-Up Stream:</strong> The model automatically streams its final synthesized answer as text chunks to the caller.</div>
+                <div>4. <strong>Optional UI Indicators:</strong> If you are building a user interface and want to show a loading badge or status indicator when a tool is called, inspect <code className="text-zinc-200 font-mono">chunk.tool_calls</code>:</div>
+              </div>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.streamingTools}
+                filename="streaming_tools.py"
+                language="python"
+              />
+            </section>
+
+            {/* STREAMING: THINKING */}
+            <section id="streaming-thinking" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Streaming Thinking &amp; Reasoning Tokens
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                For reasoning models (<strong>OpenAI</strong> <code className="text-zinc-200 font-mono">gpt-6-astra</code>, <strong>Anthropic</strong> <code className="text-zinc-200 font-mono">claude-3-7-sonnet-20250219</code>, or <strong>Gemini</strong> <code className="text-zinc-200 font-mono">gemini-3.8-flash</code> with thinking enabled), intermediate thought tokens stream via <code className="text-zinc-200 font-mono">chunk.thinking</code>:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.streamingThinking}
+                filename="streaming_thinking.py"
+                language="python"
+              />
+            </section>
+
+            {/* STREAMING: STATELESS */}
+            <section id="streaming-stateless" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Stateless Provider Streaming
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Stream direct single-turn LLM calls without agent wrappers using <code className="text-zinc-200 font-mono">provider.generate()</code> or <code className="text-zinc-200 font-mono">provider.generate_async()</code>:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.streamingStateless}
+                filename="streaming_stateless.py"
+                language="python"
+              />
+            </section>
+
+            {/* STREAMING: CONTEXT MANAGERS & TTFT */}
+            <section id="streaming-cleanup" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Context Managers &amp; TTFT Telemetry
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Streams implement context manager protocols (<code className="text-zinc-200 font-mono">with</code> / <code className="text-zinc-200 font-mono">async with</code>) for deterministic cleanup if you break out of iteration early:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.streamingContextManager}
+                filename="streaming_cleanup.py"
+                language="python"
+              />
+
+              <div className="space-y-2 text-xs text-zinc-400 leading-relaxed p-4 rounded-lg bg-[#09090b] border border-white/[0.08]">
+                <strong className="text-white block">Time to First Token (TTFT) &amp; Zero-Flooding Telemetry:</strong>
+                <div>• <strong>time_to_first_token_ms:</strong> Measured precisely from the moment the HTTP stream request starts until the first content or thinking token arrives. Accessible on <code className="text-zinc-200 font-mono">stream.time_to_first_token_ms</code> and recorded on <code className="text-zinc-200 font-mono">LLMCallEndEvent</code>.</div>
+                <div>• <strong>is_streaming:</strong> Boolean flag set to <code className="text-zinc-200 font-mono">True</code> on <code className="text-zinc-200 font-mono">LLMCallStartEvent</code> and <code className="text-zinc-200 font-mono">LLMCallEndEvent</code>.</div>
+                <div>• <strong>Zero-Flooding Architecture:</strong> Evidor does not emit telemetry events per token. Lifecycle events are recorded at the call boundaries, preserving maximum streaming throughput without queue saturation.</div>
+                <div>• <strong>stream.get_final_response():</strong> Retrieve the final accumulated <code className="text-zinc-200 font-mono">GenerationResponse</code> without consuming remaining chunks manually.</div>
+              </div>
+            </section>
+
             {/* 13. THINKING & REASONING MODE */}
             <section id="thinking-mode" className="space-y-3 scroll-mt-24">
               <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
@@ -707,6 +886,27 @@ pip install "evidor[all]"`}
                 filename="concurrent_tools.py"
                 language="python"
               />
+            </section>
+
+            {/* PERSISTENT CONNECTION POOLING */}
+            <section id="connection-pooling" className="space-y-3 scroll-mt-24">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Persistent Connection Pooling &amp; Daemon Loop
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Synchronous <code className="text-zinc-200 font-mono">agent.send()</code> transparently bridges calls through an encapsulated background daemon event loop. This preserves underlying HTTP/2 keep-alive connection pools across conversation turns, eliminating TCP/TLS handshake latency on subsequent turns without tearing down sockets between calls:
+              </p>
+
+              <CodeBlock
+                code={CODE_EXAMPLES.persistentConnectionPool}
+                filename="connection_pooling.py"
+                language="python"
+              />
+
+              <div className="p-3 rounded-md bg-zinc-950 border border-zinc-800 text-xs text-zinc-400">
+                <strong className="text-white block mb-1">Zero Handshake Overhead:</strong>
+                Subsequent requests within an active agent session reuse active TLS sessions. When finished, call <code className="text-zinc-200 font-mono">agent.close()</code> (or use <code className="text-zinc-200 font-mono">with Agent(...) as agent:</code>) to cleanly drain connection pools and terminate the background daemon thread.
+              </div>
             </section>
 
             {/* 18. EVENT LOOP GUARDS */}

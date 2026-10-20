@@ -214,14 +214,14 @@ export default function HomePage() {
                   <Zap className="w-4 h-4" />
                 </div>
                 <h3 className="text-sm font-semibold text-white mb-1.5">
-                  Async &amp; Concurrent Tools
+                  Streaming &amp; Concurrent Tools
                 </h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Async-first engine executing multi-tool turns concurrently via <code className="text-zinc-200 font-mono">asyncio.gather()</code>, loop guards, MCP servers, and a non-blocking &lt;1µs telemetry actor.
+                  Real-time token streaming with TTFT tracking, concurrent multi-tool turns via <code className="text-zinc-200 font-mono">asyncio.gather()</code>, persistent connection pooling, MCP, and a non-blocking &lt;1µs telemetry actor.
                 </p>
               </div>
               <div className="mt-5 pt-3 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-500">
-                asyncio.gather • MCP • OTel
+                stream=True • TTFT • asyncio.gather
               </div>
             </div>
           </div>
@@ -399,8 +399,8 @@ export default function HomePage() {
             {
               icon: Zap,
               tag: 'ROADMAP',
-              title: 'Streaming & Token Dispatch',
-              desc: 'Streaming generator responses during multi-turn conversations and real-time tool invocation events.',
+              title: 'Distributed Agent Clusters',
+              desc: 'Cross-process supervision hierarchies, persistent task queues, and distributed checkpointing for large agent fleets.',
             },
             {
               icon: Workflow,
